@@ -1,0 +1,45 @@
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.exe
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.deps.json
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.runtimeconfig.json
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.csproj.AssemblyReference.cache
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfoInputs.cache
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfo.cs
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.csproj.CoreCompileInputs.cache
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\refint\Grote_Opdracht.dll
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.genruntimeconfig.cache
+C:\Users\izabe\Documents\Kunstmatige Intelligentie\Jaar 3\Optimalisering en Complexiteit\Grote_Opdracht\Grote_Opdracht\obj\Debug\net6.0\ref\Grote_Opdracht.dll
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.exe
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.deps.json
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.runtimeconfig.json
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfoInputs.cache
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfo.cs
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.csproj.CoreCompileInputs.cache
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.sourcelink.json
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\refint\Grote_Opdracht.dll
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.genruntimeconfig.cache
+C:\Users\lenna\Downloads\School\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\ref\Grote_Opdracht.dll
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.exe
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.deps.json
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.runtimeconfig.json
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfoInputs.cache
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfo.cs
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.csproj.CoreCompileInputs.cache
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.sourcelink.json
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\refint\Grote_Opdracht.dll
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.genruntimeconfig.cache
+C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\ref\Grote_Opdracht.dll

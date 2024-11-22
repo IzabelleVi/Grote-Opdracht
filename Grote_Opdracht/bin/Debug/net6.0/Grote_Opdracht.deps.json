@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "Grote_Opdracht/1.0.0": {
+        "runtime": {
+          "Grote_Opdracht.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Grote_Opdracht/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
