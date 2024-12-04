@@ -2,7 +2,9 @@ using Grote_Opdracht;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 
-class Bedrijf
+
+// Class die wordt gebruikt om een bedrijf te representeren
+class Bedrijf //functioneel
 {
     public int Order { get; set; }
     public string Plaats { get; set; }
@@ -23,7 +25,7 @@ class Bedrijf
     
 }
 
-class Program
+class Program //functioneel
 {
     public static List<Bedrijf> bedrijven;
     public static int[,] AfstandenMatrix;
@@ -46,7 +48,7 @@ class Program
         Console.ReadLine();
     }
 
-    static List<Bedrijf> InlezenBedrijfsData(string bestandsnaam)
+    static List<Bedrijf> InlezenBedrijfsData(string bestandsnaam) //functioneel
     {
         List<Bedrijf> bedrijven = new List<Bedrijf>();
 
@@ -84,7 +86,7 @@ class Program
         return bedrijven;
     }
 
-    static int[,] InlezenAfstandenData(string bestandsnaam)
+    static int[,] InlezenAfstandenData(string bestandsnaam) //functioneel
     {
         int[,] afstandenMatrix = new int[bedrijven.Count, bedrijven.Count];
         try
@@ -109,18 +111,23 @@ class Program
         double allerBesteKost = 1000000000;
         List<DoubleLinkedList> allerBesteOphaalpatronen = new List<DoubleLinkedList>();
         int x = 1;
-        while (x < 100000000)
+        while (x < 100000) // Hoeveelheid itteraties dat we het programma opnieuw starten met een nieuwe begin oplossing
         {
 
             // Simulated Annealing-parameters
             double initieleTemperatuur = 100.0;
             double afkoelingsfactor = 0.95;
 
-            // Huidige oplossing genereren (willekeurig)
-            Clean_bedrijven();
-            Complete_Rijtijd = 0;
+            // Parameters op 0 zetten, bij eerste oplossing)
+            if (x == 1)
+            {
+                Clean_bedrijven();
+                Complete_Rijtijd = 0;
+            }
 
+            // Genereren van een beginoplossing
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
+
             // Evalueren van de kost van de huidige oplossing
             huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen);
 
@@ -140,11 +147,14 @@ class Program
                 // Incrementeer de iteratie
                 iteratie++;
             }
+            // Checken of betere oplossing gevonden is.
             if (huidigeKost < allerBesteKost)
             {
                 allerBesteKost = huidigeKost;
                 allerBesteOphaalpatronen = huidigeOphaalpatronen;
             }
+
+            // Elke 100 itteraties de huidige beste oplossing printen
             x++;
             if (x % 100 == 0)
             {
@@ -152,13 +162,13 @@ class Program
             }
             
         }
-        List<DoubleLinkedList> samengevoegde =  RittenSamenvoegen(allerBesteOphaalpatronen);
+        // Print & returned de beste oplossing
         ToonResultaten(allerBesteOphaalpatronen, allerBesteKost);
         return (allerBesteOphaalpatronen, allerBesteKost);
         
     }
 
-    static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen)
+    static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen) //  Wordt niet gebruikt
     {
         for (int i = 0; i < 15; i++)
         {
@@ -189,7 +199,7 @@ class Program
         return allerBesteOphaalpatronen;
     }   
 
-    static List<DoubleLinkedList> GenereerWillekeurigeOphaalpatronen()
+    static List<DoubleLinkedList> GenereerWillekeurigeOphaalpatronen() // wordt niet gebruikt.
     {
         Random random = new Random();
         List<DoubleLinkedList> willekeurigeOphaalpatronen = new List<DoubleLinkedList>();
@@ -221,6 +231,7 @@ class Program
                         vrachtwagenInhoud = 0;
                         Node stort_node = new Node(stortPlaats);
                         huidigeOphaalpatroon.AddLast(stort_node);
+                        
                     }
                     // Controleer of het bedrijf nog niet voldoende is bezocht en of het afval in de vrachtwagen past
                     if (huidigBedrijf.langsGeweest < huidigBedrijf.Frequentie &&
@@ -255,7 +266,7 @@ class Program
         return willekeurigeOphaalpatronen;
     }
 
-    public static double TijdTussenBedrijven(Bedrijf bedrijf1, Bedrijf bedrijf2)
+    public static double TijdTussenBedrijven(Bedrijf bedrijf1, Bedrijf bedrijf2) //functioneel, returned de tijd tussen 2 bedrijven
     {
         int matrixID1 = bedrijf1.MatrixID;
         int matrixID2 = bedrijf2.MatrixID;
@@ -263,8 +274,12 @@ class Program
         return AfstandenMatrix[matrixID1, matrixID2];
     }
 
-    static List<DoubleLinkedList> BuurRuimteBepalen(List<DoubleLinkedList> OphaalPatroon)
+    static List<DoubleLinkedList> BuurRuimteBepalen(List<DoubleLinkedList> OphaalPatroon) //functioneel
     {
+        // Bepaald wat we gaan wisselene in het huidige ophaalpatroon, shift een bedrijf tussen andere dagen, trucks, 
+        // op een andere plek binnen de zelfde dag of voegt een bedrijf toe of verwijderd een bedrijf. switch is hier overigens
+        // niet optimaal, omdat niet elke oplossing even goed werkt, denk dat shift tussen andere dag, truck & zelfde dag het belangrijkst
+        // zijn zodra er een redelijke "being oplossing is, en dat add & delete alleen in het begin nodig zijn.
         Random random = new Random();
 
         int rand = random.Next(1, 5);
@@ -292,7 +307,7 @@ class Program
 
     }
 
-    static void ToonResultaten(List<DoubleLinkedList> besteOphaalpatronen, double besteKost)
+    static void ToonResultaten(List<DoubleLinkedList> besteOphaalpatronen, double besteKost) // niet functioneel
     {
         //resultaten moeten in de volgende manier worden weergegeven:
             // vrachtwagen/dag/nummer op lijst/bedrijf id(stort heeft hier 0); bijv 1/4/13/0 (vrachtwagen 1 gaat op donderdag als 13e adres storten)
@@ -327,7 +342,7 @@ class Program
         Console.WriteLine($"nog te bezoeken: {BeginOplossing.bedrijvenlijst_nog_niet.Count}");
     }
 
-    public static bool AccepteerOplossing(double incrementeel)
+    public static bool AccepteerOplossing(double incrementeel) // functioneel
     {
         // Als de buuroplossing beter is, accepteer deze altijd
         if (incrementeel <= 0)
@@ -348,32 +363,29 @@ class Program
         
     }
 
-    static double BerekenTotaleKost(List<DoubleLinkedList> ophaalpatronen)
+    static double BerekenTotaleKost(List<DoubleLinkedList> ophaalpatronen) //functioneel
     {
-
         double totale_kost = 0;
-
         // de tijd:
         for (int i = 0; i < BeginOplossing.tijden.Length; i++)
             totale_kost += BeginOplossing.tijden[i];
 
         // penalties:
-        totale_kost += BeginOplossing.bedrijvenlijst_nog_niet.Count *1000;
+        totale_kost += BeginOplossing.bedrijvenlijst_nog_niet.Count *1000; // penalty voor niet bezochte bedrijven
 
-        // in theorie zouden verkeerde dagen niet mogelijk zijn, maar idk
-
-        return (totale_kost);
+        return totale_kost;
     }
 
-    static void Clean_bedrijven()
+    static void Clean_bedrijven() //functioneel
     {
+        // Zet bij alle bedrijven langsGeweest op 0
         foreach (Bedrijf bedrijf in bedrijven)
         {
             bedrijf.langsGeweest = 0;
         }
     }   
 
-    public static bool Check_Legit(DoubleLinkedList OphaalPatroon)
+    public static bool Check_Legit(DoubleLinkedList OphaalPatroon) //functioneel
     {
         Bedrijf stortPlaats = new Bedrijf(); stortPlaats.Order = 0; stortPlaats.MatrixID = 287; // Ga ervan uit dat de stortplaats bekend is
         double volume = 0;
