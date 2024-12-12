@@ -1,181 +1,118 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Grote_Opdracht
 {
     internal class BeginOplossing
     {
-        public static Random random = new Random();
+        private const int MAX_TRUCK_CAPACITY = 20000; // Maximum capacity in liters.
+        private const int MAX_TRUCK_TIME_SECONDS = 720 * 60; // 720 minutes per day in seconds.
+        private const int DISPOSAL_TIME_SECONDS = 30 * 60; // 30 minutes to dispose of waste.
 
-        public static List<DoubleLinkedList> ophaalpatronen = new List<DoubleLinkedList>();
+        public static Bedrijf stortPlaats = new Bedrijf {
+            Order = 0,
+            Plaats = "Stortplaats",
+            LedigingsDuurMinuten = DISPOSAL_TIME_SECONDS,
+            MatrixID = 287
+        };
 
-        // Maak een lijst met alle bedrijven die nog opgehaald moeten worden
-        public static List<Bedrijf> bedrijvenlijst_nog_niet = new List<Bedrijf>(Program.bedrijven);
-
-        // Maak arrays om bij te houden of de ritten vol zitten
-        public static bool[] ritMogelijkheid = new bool[15];
-        public static double[] tijden = new double[15]; 
-        public static double[] volumes = new double[15];
-
-        // stortplaats
-        public static Bedrijf stortPlaats = new Bedrijf();
         public static List<DoubleLinkedList> WillekeurigeBeginOplossing()
         {
-            bedrijvenlijst_nog_niet = new List<Bedrijf>(Program.orgineleBedrijven);
+            // Initialize 10 routes (2 trucks per day for 5 days).
+            List<DoubleLinkedList> routes = Enumerable.Range(0, 10).Select(_ => new DoubleLinkedList()).ToList();
+
             Random random = new Random();
-            for(int i = 0; i < 15; i++)
-                ritMogelijkheid[i] = true;
-                
-            stortPlaats.Order = 0; stortPlaats.MatrixID = 287; stortPlaats.Plaats = "Stortplaats"; stortPlaats.LedigingsDuurMinuten = 30 * 60;
-            ophaalpatronen.Clear();
 
+            // Group businesses by "Plaats" for better clustering.
+            var groupedBusinesses = Program.bedrijven
+                .GroupBy(b => b.Plaats)
+                .ToDictionary(g => g.Key, g => new Queue<Bedrijf>(g.ToList()));
 
-            // Maak 15 ritten aan:
-            for (int i = 0; i < 15; i++)
-            {
-                ophaalpatronen.Add(new DoubleLinkedList());
-            }
-            while (true)
-            {
-                Bedrijf bedrijf = bedrijvenlijst_nog_niet[random.Next(0, bedrijvenlijst_nog_niet.Count)];
-                switch (bedrijf.Frequentie)
-                {
-                    case 1:
-                        bedrijvenlijst_nog_niet.Remove(bedrijf);
-                        int rit = random.Next(0, 15);
+            // Shuffle the dictionary to ensure a semi-random solution
+            groupedBusinesses.OrderBy(x => random.Next()).ToDictionary(g => g.Key, g => g.Value);
 
-                        if (Check_Possible(rit, bedrijf))
-                            Toevoegen(bedrijf, rit);
+            // Keep track of remaining visits for each business.
+            var remainingVisits = Program.bedrijven.ToDictionary(b => b, b => b.Frequentie);
 
-                        else
-                        {
-                            rit = random.Next(0, 15);
-                            for (int i = 0; i < 10; i++)
-                            {
-                                if (Check_Possible(rit, bedrijf))
-                                {
-                                    Toevoegen(bedrijf, rit);
-                                    break;
-                                }
-                                else
-                                    rit = random.Next(0, 15);
+            // Schedule businesses onto truck routes.
+            foreach (var group in groupedBusinesses) {
+                foreach (var bedrijf in group.Value) {
+                    // Assign days based on frequency.
+                    List<int> days = GetValidDaysForFrequency(bedrijf.Frequentie, random);
+
+                    foreach (int day in days) {
+                        int truckIndex = day * 2 + random.Next(0, 2); // Choose one of two trucks for the day.
+                        if (!AssignToRoute(routes[truckIndex], bedrijf, remainingVisits)) {
+                            if (AssignToRoute(routes[truckIndex], stortPlaats, null)) {
+                                AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); // Dispose of garbage at stortplaats and try again
                             }
+                            else Console.WriteLine("Impossible to return to startPlaats in time, route not possible"); // Try harder
                         }
-                        break;
-                    case 2:
-
-                        bedrijvenlijst_nog_niet.Remove(bedrijf);
-                        // ma-do of di-vr
-                        int temp = (random.Next(0, 2)) * 2;
-                        Toevoegen(bedrijf, random.Next(0, 2) + temp);
-                        Toevoegen(bedrijf, random.Next(6, 8) + temp);
-
-                        break;
-                    case 3:
-
-                        bedrijvenlijst_nog_niet.Remove(bedrijf);
-                        // ma-wo-vr
-                        Toevoegen(bedrijf, random.Next(0, 2));
-                        Toevoegen(bedrijf, random.Next(4, 6));
-                        Toevoegen(bedrijf, random.Next(8, 10));
-                        break;
-                    case 4:
-
-                        bedrijvenlijst_nog_niet.Remove(bedrijf);
-                        // ma-di-wo-do of di-wo-do-vr
-                        int temp2 = (random.Next(0, 2)) * 2;
-                        Toevoegen(bedrijf, random.Next(0, 2) + temp2);
-                        Toevoegen(bedrijf, random.Next(2, 4) + temp2);
-                        Toevoegen(bedrijf, random.Next(4, 6) + temp2);
-                        Toevoegen(bedrijf, random.Next(6, 8) + temp2);
-                        break;
-                    case 5:
-
-                        bedrijvenlijst_nog_niet.Remove(bedrijf);
-                        // ma-di-wo-do-vr
-                        Toevoegen(bedrijf, random.Next(0, 2));
-                        Toevoegen(bedrijf, random.Next(2, 4));
-                        Toevoegen(bedrijf, random.Next(4, 6));
-                        Toevoegen(bedrijf, random.Next(6, 8));
-                        Toevoegen(bedrijf, random.Next(8, 10));
-
-
-                        break;
-
+                    }
                 }
-                if (ritMogelijkheid.All(mogelijkheid => mogelijkheid == false))
-                    break;
             }
 
-            // dit doet me ongelooflijk veel pijn
-            Toevoegen(stortPlaats, 0);
-            Toevoegen(stortPlaats, 1);
-            Toevoegen(stortPlaats, 2);
-            Toevoegen(stortPlaats, 3);
-            Toevoegen(stortPlaats, 4);
-            Toevoegen(stortPlaats, 5);
-            Toevoegen(stortPlaats, 6);
-            Toevoegen(stortPlaats, 7);
-            Toevoegen(stortPlaats, 8);
-            Toevoegen(stortPlaats, 9);
-            Toevoegen(stortPlaats, 10);
-            Toevoegen(stortPlaats, 11);
-            Toevoegen(stortPlaats, 12);
-            Toevoegen(stortPlaats, 13);
-            Toevoegen(stortPlaats, 14);
-            return ophaalpatronen;
+            // Ensure all routes start and end at the disposal site.
+            foreach (DoubleLinkedList route in routes) {
+                AddDisposalSiteToRoute(route);
+            }
+
+            return routes;
         }
 
-        public static bool Check_Possible(int rit, Bedrijf bedrijf)
+        private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits)
         {
-            bool tijd = false;
-            bool volume = false;
+            double currentVolume = 0;
+            double currentTime = 0;
 
-            if (ophaalpatronen[rit].tail == null)
-                return true;
-            Bedrijf vorigeBedrijf = ophaalpatronen[rit].tail.data;
-
-            // check of het binnen de tijd past
-            if (Program.AfstandenMatrix[vorigeBedrijf.MatrixID,bedrijf.MatrixID] + tijden[rit] + bedrijf.LedigingsDuurMinuten < 570*60)
-                tijd = true;
-
-            // check of afval past
-            if ((bedrijf.VolumePerContainer*bedrijf.AantContainers) + volumes[rit] < 20000)
-                volume = true;
-
-
-            if (tijd && volume)
-                return true;
-            else
-            {
-                ritMogelijkheid[rit] = false;
-                return false;
+            // Calculate current route metrics.
+            Node? currentNode = route.head;
+            while (currentNode != null) {
+                currentVolume += currentNode.data.VolumePerContainer * currentNode.data.AantContainers;
+                currentTime += Program.TijdTussenBedrijven(currentNode.previous?.data ?? stortPlaats, currentNode.data);
+                currentNode = currentNode.next;
             }
+
+            // Simulate adding this business to the route.
+            double additionalVolume = bedrijf.VolumePerContainer * bedrijf.AantContainers;
+            double additionalTime = Program.TijdTussenBedrijven(route.tail?.data ?? stortPlaats, bedrijf);
+
+            // Simulate going to the stortplaats at the end of the day
+            additionalTime += Program.TijdTussenBedrijven(bedrijf, stortPlaats) + DISPOSAL_TIME_SECONDS;
+
+            if (currentVolume + additionalVolume <= MAX_TRUCK_CAPACITY &&
+                currentTime + additionalTime <= MAX_TRUCK_TIME_SECONDS) {
+                route.AddLast(new Node(bedrijf));
                 
+                // null if place we add is stortplaats
+                if (remainingVisits != null) remainingVisits[bedrijf]--;
+                return true;
+            }
+
+            return false;
         }
 
-        public static void Toevoegen(Bedrijf bedrijf, int rit)
+        private static void AddDisposalSiteToRoute(DoubleLinkedList route)
         {
-            Node bedrijfNode = new Node(bedrijf);
-            ophaalpatronen[rit].AddLast(bedrijfNode);
-            Node vorigBedrijf = bedrijfNode.previous;
-            if(vorigBedrijf == null)
-            {
+            if (route.head == null) {
+                route.AddFirst(new Node(stortPlaats));
+                route.AddLast(new Node(stortPlaats));
+            } else {
+                route.AddFirst(new Node(stortPlaats));
+                route.AddLast(new Node(stortPlaats));
+            }
+        }
 
-                tijden[rit] += Program.TijdTussenBedrijven(stortPlaats, bedrijf) + bedrijf.LedigingsDuurMinuten;
-                volumes[rit] += bedrijf.VolumePerContainer * bedrijf.AantContainers;
-            }
-            else
-            {
-                tijden[rit] += Program.TijdTussenBedrijven(vorigBedrijf.data, bedrijf) + bedrijf.LedigingsDuurMinuten;
-                volumes[rit] += bedrijf.VolumePerContainer * bedrijf.AantContainers;
-            }
-                
+        private static List<int> GetValidDaysForFrequency(int frequency, Random random)
+        {
+            return frequency switch {
+                1 => new List<int> { random.Next(0, 5) }, // Any one day.
+                2 => random.Next(0, 2) == 0 ? new List<int> { 0, 3 } : new List<int> { 1, 4 }, // Mon-Thu or Tue-Fri.
+                3 => new List<int> { 0, 2, 4 }, // Mon-Wed-Fri.
+                4 => new List<int> { 0, 1, 2, 3 }.OrderBy(_ => random.Next()).Take(4).ToList(), // Any 4 days.
+                _ => throw new ArgumentException($"Invalid frequency: {frequency}")
+            };
         }
     }
 }

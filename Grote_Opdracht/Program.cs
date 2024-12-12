@@ -168,36 +168,36 @@ class Program //functioneel
         
     }
 
-    static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen) //  Wordt niet gebruikt
-    {
-        for (int i = 0; i < 15; i++)
-        {
-            Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600 * 60}");
-        }
-        int dag = 0;
-        for (int i = 10; i < 15; i++)
-        {
-            if (BeginOplossing.tijden[dag] + BeginOplossing.tijden[i] < 600 * 60)
-            {
-                allerBesteOphaalpatronen[dag].AddList(allerBesteOphaalpatronen[i]);
-                BeginOplossing.tijden[dag] += BeginOplossing.tijden[i];
-            }
-            else if (BeginOplossing.tijden[dag + 1] + BeginOplossing.tijden[i] < 600 * 60)
-            {
-                allerBesteOphaalpatronen[dag + 1].AddList(allerBesteOphaalpatronen[i]);
-                BeginOplossing.tijden[dag + 1] += BeginOplossing.tijden[i];
-            }
-            else
-            {
-                Console.WriteLine($"Fout bij samenvoegen: rit {i} past niet in dag {dag}");
-                throw new Exception("Fout bij samenvoegen");
-            }
-        }
+    //static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen) //  Wordt niet gebruikt
+    //{
+    //    for (int i = 0; i < 15; i++)
+    //    {
+    //        Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600 * 60}");
+    //    }
+    //    int dag = 0;
+    //    for (int i = 10; i < 15; i++)
+    //    {
+    //        if (BeginOplossing.tijden[dag] + BeginOplossing.tijden[i] < 600 * 60)
+    //        {
+    //            allerBesteOphaalpatronen[dag].AddList(allerBesteOphaalpatronen[i]);
+    //            BeginOplossing.tijden[dag] += BeginOplossing.tijden[i];
+    //        }
+    //        else if (BeginOplossing.tijden[dag + 1] + BeginOplossing.tijden[i] < 600 * 60)
+    //        {
+    //            allerBesteOphaalpatronen[dag + 1].AddList(allerBesteOphaalpatronen[i]);
+    //            BeginOplossing.tijden[dag + 1] += BeginOplossing.tijden[i];
+    //        }
+    //        else
+    //        {
+    //            Console.WriteLine($"Fout bij samenvoegen: rit {i} past niet in dag {dag}");
+    //            throw new Exception("Fout bij samenvoegen");
+    //        }
+    //    }
         
-        allerBesteOphaalpatronen.RemoveRange(10, 5);
+    //    allerBesteOphaalpatronen.RemoveRange(10, 5);
 
-        return allerBesteOphaalpatronen;
-    }   
+    //    return allerBesteOphaalpatronen;
+    //}   
 
     static List<DoubleLinkedList> GenereerWillekeurigeOphaalpatronen() // wordt niet gebruikt.
     {
@@ -266,8 +266,9 @@ class Program //functioneel
         return willekeurigeOphaalpatronen;
     }
 
-    public static double TijdTussenBedrijven(Bedrijf bedrijf1, Bedrijf bedrijf2) //functioneel, returned de tijd tussen 2 bedrijven
+    public static double TijdTussenBedrijven(Bedrijf? bedrijf1, Bedrijf? bedrijf2) //functioneel, returned de tijd tussen 2 bedrijven
     {
+        if (bedrijf1 == null || bedrijf2 == null) return 0;
         int matrixID1 = bedrijf1.MatrixID;
         int matrixID2 = bedrijf2.MatrixID;
 
@@ -337,7 +338,7 @@ class Program //functioneel
         Console.WriteLine($"Totale kost: {besteKost}");
         for (int i = 0; i < 15; i++)
         {
-            Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600*60}");
+            Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600*60}"); // Morgen naar kijken
         }
         Console.WriteLine($"nog te bezoeken: {BeginOplossing.bedrijvenlijst_nog_niet.Count}");
     }
@@ -367,7 +368,7 @@ class Program //functioneel
     {
         double totale_kost = 0;
         // de tijd:
-        for (int i = 0; i < BeginOplossing.tijden.Length; i++)
+        for (int i = 0; i < BeginOplossing.tijden.Length; i++) // morgen naar kijken
             totale_kost += BeginOplossing.tijden[i];
 
         // penalties:

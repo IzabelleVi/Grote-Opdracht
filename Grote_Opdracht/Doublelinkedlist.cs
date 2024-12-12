@@ -10,8 +10,8 @@ namespace Grote_Opdracht
     class Node
     {
         public Bedrijf data;
-        public Node next;
-        public Node previous;
+        public Node? next;
+        public Node? previous;
 
         public Node(Bedrijf data)
         {
@@ -22,8 +22,8 @@ namespace Grote_Opdracht
     }
     class DoubleLinkedList
     {
-        public Node head;
-        public Node tail;
+        public Node? head;
+        public Node? tail;
         public int count;
 
         public DoubleLinkedList()
@@ -66,7 +66,7 @@ namespace Grote_Opdracht
             else
             {
                 node.previous = tail;
-                tail.next = node;
+                tail!.next = node;
                 tail = node;
                 count++;
             }
@@ -81,7 +81,7 @@ namespace Grote_Opdracht
             else
             {
                 head = head.next;
-                head.previous = null;
+                head!.previous = null;
                 count--;
             }
         }
@@ -94,8 +94,8 @@ namespace Grote_Opdracht
             }
             else
             {
-                tail = tail.previous;
-                tail.next = null;
+                tail = tail!.previous;
+                tail!.next = null;
                 count--;
             }
         }
@@ -118,8 +118,8 @@ namespace Grote_Opdracht
                 }
                 else
                 {
-                    node.previous.next = node.next;
-                    node.next.previous = node.previous;
+                    node.previous!.next = node.next;
+                    node.next!.previous = node.previous;
                     count--;
                 }
             }
@@ -134,7 +134,7 @@ namespace Grote_Opdracht
 
         public void Print()
         {
-            Node current = head;
+            Node? current = head;
             while (current != null)
             {
                 Console.WriteLine(current.data);
@@ -142,31 +142,31 @@ namespace Grote_Opdracht
             }
         }
 
-        public Node Find(Bedrijf data)
+        public Node? Find(Bedrijf data)
         {
-            Node current = head;
+            Node? current = head;
             while (current != null)
             {
                 if (current.data == data)
                 {
                     return current;
                 }
-                current = current.next;
+                current = current.next!;
             }
         return null;
         }
 
-        public Node Index(int index)
+        public Node? Index(int index)
         {
             int i = 0;
-            Node current = head;
+            Node? current = head;
             while (current != null)
             {
                 if (i == index)
                 {
                     return current;
                 }
-                current = current.next;
+                current = current.next!;
                 i++;
             }
             return null;
@@ -175,7 +175,7 @@ namespace Grote_Opdracht
         public void Insert(int index, Node node)
         {
             int i = 0;
-            Node current = head;
+            Node? current = head;
             if (index == 0)
             {
                 AddFirst(node);
@@ -212,7 +212,7 @@ namespace Grote_Opdracht
         
         public void FindAndReplace(Bedrijf data, Bedrijf newData)
         {
-            Node current = head;
+            Node? current = head;
             while (current != null)
             {
                 if (current.data == data)
@@ -233,11 +233,12 @@ namespace Grote_Opdracht
 
         public void AddList(DoubleLinkedList extraRit)
         {
+            if (extraRit.head == null) return;
             Node node = extraRit.head;
             while(node != extraRit.tail)
             {
-                AddLast(node);
-                node = node.next;
+                AddLast(node!);
+                node = node.next!;
                 count++;
             }
             AddLast(node);
@@ -246,25 +247,21 @@ namespace Grote_Opdracht
 
         public void InsertAtIndex(Node newNode, int index)
         {
-            if (index == 0)
-            {
+            if (index == 0) {
                 AddFirst(newNode);
-            }
-            else if (index == Count)
-            {
+            } else if (index > Count) return; // Morgen bespreken wtf happened
+            else if (index == Count) {
                 AddLast(newNode);
-            }
-            else
-            {
+            } else {
                 // Voeg toe in het midden van de lijst
-                Node current = head;
+                Node? current = head;
                 for (int i = 0; i < index - 1; i++)
-                    current = current.next;
+                    current = current!.next;
 
-                newNode.next = current.next;
+                newNode.next = current!.next;
                 newNode.previous = current;
 
-                current.next.previous = newNode;
+                current.next!.previous = newNode;
                 current.next = newNode;
             }
         }
@@ -275,18 +272,19 @@ namespace Grote_Opdracht
             {
                 RemoveFirst();
             }
+            else if (index > Count) return;
             else if (index == Count - 1)
             {
                 RemoveLast();
             }
             else
             {
-                Node current = head;
+                Node? current = head;
                 for (int i = 0; i < index; i++)
-                    current = current.next;
+                    current = current!.next;
 
-                current.previous.next = current.next;
-                current.next.previous = current.previous;
+                current!.previous!.next = current.next;
+                current.next!.previous = current.previous;
             }
         }
     }
