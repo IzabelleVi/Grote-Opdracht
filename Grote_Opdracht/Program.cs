@@ -30,10 +30,12 @@ class Program //functioneel
     public static List<Bedrijf> bedrijven;
     public static int[,] AfstandenMatrix;
     static long maxIteraties = 10000000000000; // Aantal iteraties voor Simulated Annealing
-    static double Complete_Rijtijd = 0;
+    public static List<double> Rijtijd = new List<double>();
+    public static List<double> Volumes = new List<double>();
     static double temperatuur;
     public static double huidigeKost;
-    public static List<Bedrijf> orgineleBedrijven;
+    public static double totale_kost;
+    public static List<Bedrijf> NietBezochteBedrijven;
 
     static void Main()
     {
@@ -81,7 +83,7 @@ class Program //functioneel
         {
             Console.WriteLine($"Fout bij inlezen bedrijfsgegevens: {ex.Message}");
         }
-        orgineleBedrijven = new List<Bedrijf>(bedrijven);
+        NietBezochteBedrijven = new List<Bedrijf>(bedrijven);
 
         return bedrijven;
     }
@@ -118,15 +120,15 @@ class Program //functioneel
             double initieleTemperatuur = 100.0;
             double afkoelingsfactor = 0.95;
 
-            // Parameters op 0 zetten, bij eerste oplossing)
-            if (x == 1)
-            {
-                Clean_bedrijven();
-                Complete_Rijtijd = 0;
-            }
+            // Parameters op 0 zetten, bij eerste oplossing
+            Clean_bedrijven();
+            Rijtijd.Clear();
 
             // Genereren van een beginoplossing
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
+
+            // Bereken de totale tijd van de Oplossing
+            double totaleTijd = BerekenTotaleTijd(huidigeOphaalpatronen);
 
             // Evalueren van de kost van de huidige oplossing
             huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen);
@@ -168,103 +170,6 @@ class Program //functioneel
         
     }
 
-    //static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen) //  Wordt niet gebruikt
-    //{
-    //    for (int i = 0; i < 15; i++)
-    //    {
-    //        Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600 * 60}");
-    //    }
-    //    int dag = 0;
-    //    for (int i = 10; i < 15; i++)
-    //    {
-    //        if (BeginOplossing.tijden[dag] + BeginOplossing.tijden[i] < 600 * 60)
-    //        {
-    //            allerBesteOphaalpatronen[dag].AddList(allerBesteOphaalpatronen[i]);
-    //            BeginOplossing.tijden[dag] += BeginOplossing.tijden[i];
-    //        }
-    //        else if (BeginOplossing.tijden[dag + 1] + BeginOplossing.tijden[i] < 600 * 60)
-    //        {
-    //            allerBesteOphaalpatronen[dag + 1].AddList(allerBesteOphaalpatronen[i]);
-    //            BeginOplossing.tijden[dag + 1] += BeginOplossing.tijden[i];
-    //        }
-    //        else
-    //        {
-    //            Console.WriteLine($"Fout bij samenvoegen: rit {i} past niet in dag {dag}");
-    //            throw new Exception("Fout bij samenvoegen");
-    //        }
-    //    }
-        
-    //    allerBesteOphaalpatronen.RemoveRange(10, 5);
-
-    //    return allerBesteOphaalpatronen;
-    //}   
-
-    static List<DoubleLinkedList> GenereerWillekeurigeOphaalpatronen() // wordt niet gebruikt.
-    {
-        Random random = new Random();
-        List<DoubleLinkedList> willekeurigeOphaalpatronen = new List<DoubleLinkedList>();
-        Bedrijf stortPlaats = new Bedrijf(); stortPlaats.Order = 0; stortPlaats.MatrixID = 287; // Ga ervan uit dat de stortplaats bekend is
-        int Dag = 1;
-
-        while (Dag < 6) // 5 dagen in de week
-        {
-            int truck = 1;
-            while (truck < 3) // 2 trucks
-            {
-                DoubleLinkedList huidigeOphaalpatroon = new DoubleLinkedList();
-                double totaleTijd = 0;
-                double vrachtwagenInhoud = 0;
-                Bedrijf vorigBedrijf = stortPlaats; // Begin bij de stortplaats
-
-                while (totaleTijd < 570 * 60) // Tijdslimiet van 9.5 uur (570 minuten)
-                {
-                    int randomBedrijfIndex = random.Next(0, bedrijven.Count);
-                    Bedrijf huidigBedrijf = bedrijven[randomBedrijfIndex];
-                    Node temp_node = new Node(huidigBedrijf);
-
-                    // controlleert de tijdslimiet
-                    if (totaleTijd + TijdTussenBedrijven(vorigBedrijf, stortPlaats) > 550 * 60 &&
-                        vorigBedrijf != stortPlaats)
-                    {
-                        totaleTijd += TijdTussenBedrijven(vorigBedrijf, stortPlaats);
-                        totaleTijd += 30 * 60; //lossen
-                        vrachtwagenInhoud = 0;
-                        Node stort_node = new Node(stortPlaats);
-                        huidigeOphaalpatroon.AddLast(stort_node);
-                        
-                    }
-                    // Controleer of het bedrijf nog niet voldoende is bezocht en of het afval in de vrachtwagen past
-                    if (huidigBedrijf.langsGeweest < huidigBedrijf.Frequentie &&
-                        vrachtwagenInhoud + huidigBedrijf.AantContainers * huidigBedrijf.VolumePerContainer < 20000)
-                    {
-                        vrachtwagenInhoud += huidigBedrijf.AantContainers * huidigBedrijf.VolumePerContainer;
-                        totaleTijd += huidigBedrijf.LedigingsDuurMinuten + TijdTussenBedrijven(vorigBedrijf, huidigBedrijf);
-                        huidigeOphaalpatroon.AddLast(temp_node);
-                        huidigBedrijf.langsGeweest++;
-                        vorigBedrijf = huidigBedrijf;
-                    }
-                    else if (vrachtwagenInhoud + huidigBedrijf.AantContainers * huidigBedrijf.VolumePerContainer > 20000)
-                    {
-                        // Vrachtwagen is vol
-                        totaleTijd += TijdTussenBedrijven(vorigBedrijf, stortPlaats);
-                        totaleTijd += 30 * 60; //lossen
-                        vrachtwagenInhoud = 0;
-                        Node stort_node = new Node(stortPlaats);
-                        huidigeOphaalpatroon.AddLast(stort_node);
-                        vorigBedrijf = stortPlaats;
-                    }
-
-                    
-                }
-                Complete_Rijtijd += totaleTijd; // zodat we aan bij kostenberekening niet extra hoeven op te tellen
-                willekeurigeOphaalpatronen.Add(huidigeOphaalpatroon);
-                truck++;
-            }
-            Dag++;
-        }
-
-        return willekeurigeOphaalpatronen;
-    }
 
     public static double TijdTussenBedrijven(Bedrijf? bedrijf1, Bedrijf? bedrijf2) //functioneel, returned de tijd tussen 2 bedrijven
     {
@@ -280,7 +185,7 @@ class Program //functioneel
         // Bepaald wat we gaan wisselene in het huidige ophaalpatroon, shift een bedrijf tussen andere dagen, trucks, 
         // op een andere plek binnen de zelfde dag of voegt een bedrijf toe of verwijderd een bedrijf. switch is hier overigens
         // niet optimaal, omdat niet elke oplossing even goed werkt, denk dat shift tussen andere dag, truck & zelfde dag het belangrijkst
-        // zijn zodra er een redelijke "being oplossing is, en dat add & delete alleen in het begin nodig zijn.
+        // zijn zodra er een redelijke "begin oplossing is, en dat add & delete alleen in het begin nodig zijn.
         Random random = new Random();
 
         int rand = random.Next(1, 5);
@@ -296,7 +201,7 @@ class Program //functioneel
                 return BuurRuimtes.ShiftZelfdeDag(OphaalPatroon);
                 break;
             case 4:
-                if(BeginOplossing.bedrijvenlijst_nog_niet.Count > 0)
+                if(NietBezochteBedrijven.Count > 0)
                     return BuurRuimtes.Add(OphaalPatroon);
                 return OphaalPatroon;
                 break;
@@ -338,9 +243,9 @@ class Program //functioneel
         Console.WriteLine($"Totale kost: {besteKost}");
         for (int i = 0; i < 15; i++)
         {
-            Console.WriteLine($"Rit {i + 1}: {BeginOplossing.tijden[i]} sec (max = {600*60}"); // Morgen naar kijken
+            Console.WriteLine($"Rit {i + 1}: {Rijtijd} sec (max = {600*60}"); // Morgen naar kijken
         }
-        Console.WriteLine($"nog te bezoeken: {BeginOplossing.bedrijvenlijst_nog_niet.Count}");
+        Console.WriteLine($"nog te bezoeken: {NietBezochteBedrijven.Count}");
     }
 
     public static bool AccepteerOplossing(double incrementeel) // functioneel
@@ -364,15 +269,55 @@ class Program //functioneel
         
     }
 
+    static double BerekenTotaleTijd(List<DoubleLinkedList> ophaalpatronen) //functioneel
+    {
+        double totalenTijd = 0;
+        // de tijd:
+        foreach (var patroon in ophaalpatronen)
+        {
+            Node bedrijf = patroon.head;
+            for (int i = 0; i < patroon.count-1; i++)
+            {
+                Rijtijd[i] += TijdTussenBedrijven(bedrijf.data, bedrijf.next?.data);
+                if (bedrijf.data.MatrixID == 287)
+                    Rijtijd[i] += 30*60; // 30 minuten storten
+                bedrijf = bedrijf.next;
+            }
+        }
+        for (int i = 0; i < Rijtijd.Count; i++)
+        {
+            totalenTijd += Rijtijd[i];
+
+        }
+        return totalenTijd;
+    }
+
+    static List<double> BerekenHuidigeVolume(List<DoubleLinkedList> ophaalpatronen) //functioneel
+    {
+        foreach (var patroon in ophaalpatronen)
+        {
+            Node bedrijf = patroon.tail;
+            double volume = 0;
+            for (int i = patroon.count-1; i > 0; i--)
+            {
+                // Als je langs de stortplaats komt, leeg het volume.
+                if (bedrijf.data.MatrixID == 287)
+                    break;
+                volume += bedrijf.data.AantContainers * bedrijf.data.VolumePerContainer;
+                bedrijf = bedrijf.next;
+            }
+            Volumes.Add(volume);
+        }
+        return Volumes;
+    }
+
     static double BerekenTotaleKost(List<DoubleLinkedList> ophaalpatronen) //functioneel
     {
-        double totale_kost = 0;
         // de tijd:
-        for (int i = 0; i < BeginOplossing.tijden.Length; i++) // morgen naar kijken
-            totale_kost += BeginOplossing.tijden[i];
+        totale_kost = BerekenTotaleTijd(ophaalpatronen);
 
         // penalties:
-        totale_kost += BeginOplossing.bedrijvenlijst_nog_niet.Count *1000; // penalty voor niet bezochte bedrijven
+        totale_kost += NietBezochteBedrijven.Count *1000; // penalty voor niet bezochte bedrijven
 
         return totale_kost;
     }
