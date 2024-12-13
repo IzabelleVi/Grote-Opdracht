@@ -174,7 +174,7 @@ namespace Grote_Opdracht
         public static List<DoubleLinkedList> Add (List<DoubleLinkedList> ophaalpatronen)
         {
             GlobaleOphaalPatronen = ophaalpatronen;
-            Bedrijf bedrijf = BeginOplossing.bedrijvenlijst_nog_niet[random.Next(0, BeginOplossing.bedrijvenlijst_nog_niet.Count)];
+            Bedrijf bedrijf = Program.NietBezochteBedrijven[random.Next(0, Program.NietBezochteBedrijven.Count)];
             incrementeel = -1000;
             switch (bedrijf.Frequentie)
             {
@@ -492,13 +492,13 @@ namespace Grote_Opdracht
 
                 // Controleer of het binnen de tijd past
 
-                double totaleTijd = BeginOplossing.tijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] - Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data) + Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf) + Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data) + bedrijf.LedigingsDuurMinuten;
+                double totaleTijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] - Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data) + Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf) + Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data) + bedrijf.LedigingsDuurMinuten;
 
                 if (totaleTijd < 570 * 60)
                     tijd = true;
 
                 // Controleer of afval past
-                if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + BeginOplossing.volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
+                if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
                     volume = true;
             }
 
@@ -537,7 +537,7 @@ namespace Grote_Opdracht
 
                 try
                 {
-                    BeginOplossing.bedrijvenlijst_nog_niet.Add(nodeBedrijf.data);
+                    Program.NietBezochteBedrijven.Add(nodeBedrijf.data);
 
                     //tijd aanpassen
                     if (nodeBedrijf.previous != null)
@@ -550,7 +550,7 @@ namespace Grote_Opdracht
 
                         incrementeel += temp;
 
-                        BeginOplossing.tijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                        Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
                     }
                     else
                     {
@@ -561,10 +561,10 @@ namespace Grote_Opdracht
                         temp = temp + nodeBedrijf.data.LedigingsDuurMinuten;
                         incrementeel += temp;
 
-                        BeginOplossing.tijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                        Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
                     }
                     //volume aanpassen
-                    BeginOplossing.volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] -= nodeBedrijf.data.VolumePerContainer * nodeBedrijf.data.AantContainers;
+                    Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] -= nodeBedrijf.data.VolumePerContainer * nodeBedrijf.data.AantContainers;
 
                     ophaalpatroon.Remove(nodeBedrijf);
                 }
@@ -577,9 +577,9 @@ namespace Grote_Opdracht
 
         static void BaseToevoegen(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index)
         {
-            BeginOplossing.bedrijvenlijst_nog_niet.Remove(bedrijf);
+            Program.NietBezochteBedrijven.Remove(bedrijf);
             Node nodeBedrijf = new Node(bedrijf);
-            ophaalpatroon.Insert(index, nodeBedrijf);
+            ophaalpatroon.InsertAtIndex(nodeBedrijf, index);
 
             //tijden aanpassen
             if (nodeBedrijf.previous != null)
@@ -592,7 +592,7 @@ namespace Grote_Opdracht
 
                 incrementeel += temp;
 
-                BeginOplossing.tijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
             }
             else
             {
@@ -604,14 +604,14 @@ namespace Grote_Opdracht
 
                 incrementeel += temp;
 
-                BeginOplossing.tijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
             }
 
         }
 
         public static List<DoubleLinkedList> Toevoegen(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
-            Bedrijf bedrijf1 = BeginOplossing.bedrijvenlijst_nog_niet[random.Next(0, BeginOplossing.bedrijvenlijst_nog_niet.Count)];
+            Bedrijf bedrijf1 = Program.NietBezochteBedrijven[random.Next(0, Program.NietBezochteBedrijven.Count)];
 
 
             int x = 0;
@@ -626,7 +626,7 @@ namespace Grote_Opdracht
                     int index = random.Next(0, ophaalPatroon.Count);
                     if (insertChecker(ophaalPatroon, nieuwBedrijf, index))
                     {
-                        ophaalPatroon.Insert(index, nieuwBedrijfsNode);
+                        ophaalPatroon.InsertAtIndex(nieuwBedrijfsNode, index);
                         bedrijf.langsGeweest++;
                         return huidigeOphaalpatronen;
                     }
