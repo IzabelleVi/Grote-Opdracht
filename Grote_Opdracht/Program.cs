@@ -276,9 +276,12 @@ class Program //functioneel
         foreach (var patroon in ophaalpatronen)
         {
             Node bedrijf = patroon.head;
-            for (int i = 0; i < patroon.count-1; i++)
+            //Console.WriteLine(patroon.head.data.Plaats + " dit is bedrijf 1. Bedrijf 2 is: " + bedrijf.next.data.Plaats);
+            for (int i = 0; i < ophaalpatronen.Count-1; i++)
             {
                 Rijtijd[i] += TijdTussenBedrijven(bedrijf.data, bedrijf.next?.data);
+                Rijtijd[i] += bedrijf.data.LedigingsDuurMinuten;
+                //Console.WriteLine(i + " dit patroon duurt zo lang: " + Rijtijd[i]);
                 if (bedrijf.data.MatrixID == 287)
                     Rijtijd[i] += 30*60; // 30 minuten storten
                 bedrijf = bedrijf.next;
