@@ -87,6 +87,7 @@ namespace Grote_Opdracht
                 
                 // null if place we add is stortplaats
                 if (remainingVisits != null) remainingVisits[bedrijf]--;
+                Program.NietBezochteBedrijven.Remove(bedrijf);
                 return true;
             }
 
