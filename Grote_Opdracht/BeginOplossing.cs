@@ -1,3 +1,7 @@
+// To Do
+// - Het volume wordt niet gereset nadat je langs de stortplaats bent geweest
+// - Volume moet consistent door de begin oplossing of *20 (comprimeren) of je maximale  volume moet 100.00 worden.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
