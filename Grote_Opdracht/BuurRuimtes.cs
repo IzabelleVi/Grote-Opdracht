@@ -13,44 +13,52 @@ namespace Grote_Opdracht
         public static Random random = new Random();
         static List<DoubleLinkedList> GlobaleOphaalPatronen;
         
-        public static List<DoubleLinkedList> ShiftAndereDag(List<DoubleLinkedList> huidigeOphaalpatronen)
+        public static List<DoubleLinkedList> ShiftAndereDag(List<DoubleLinkedList> huidigeOphaalpatronen) //Om een bedrijf van de ene dag naar de andere te verplaatsen
         {
             incrementeel = 0;
-            GlobaleOphaalPatronen = huidigeOphaalpatronen;
+            GlobaleOphaalPatronen = huidigeOphaalpatronen; //clonen, uiteindelijk iets anders voor bedenken
+
             int tries = 0;
             while (tries < 10) // 10 keer random bedrijf pakken en dan honderd keer kijken of die past
             {
-                int Dag1 = random.Next(0, huidigeOphaalpatronen.Count);
-                DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)];
+                int Dag1 = random.Next(0, huidigeOphaalpatronen.Count); // kies een random rit
+                DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)]; // kies een random ophaalpatroon
                 int index;
                 try
                 {
-                    index = random.Next(1, ophaalPatroon.Count) - 1;
+                    index = random.Next(1, ophaalPatroon.Count) - 1; // kies een random bedrijf
+                    if (index == 0 || index == ophaalPatroon.Count - 1) 
+                    {
+                        tries++;
+                        continue;
+                    }
                 }
                 catch
                 {
-                    continue;
+                    continue; // voor als er geen bedrijven zijn
                 }
-                Node verplaatsbareNode = ophaalPatroon.Index(index);
+                Node verplaatsbareNode = ophaalPatroon.Index(index); // de node die we gaan verplaatsen
+                if (verplaatsbareNode == null) continue; // Check of de node wel iets is
                 Bedrijf verplaatsbaarBedrijf = verplaatsbareNode.data;
-                if (verplaatsbaarBedrijf.Plaats == "Stortplaats") continue;
+                if (verplaatsbaarBedrijf.Plaats == "Stortplaats") continue; // overslaan als het de stortplaats is
+
                 int tries2 = 0;
-                while (tries2 < 100)
+                while (tries2 < 100) // honderd keer proberen te verplaatsen
                 {
-                    DoubleLinkedList nieuweOphaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)];
+                    DoubleLinkedList nieuweOphaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)]; // Kies het nieuwe ophaalpatroon waar je hem naar verplaatst
                     int nieuwePlek;
                     try
                     {
-                        nieuwePlek = random.Next(1, nieuweOphaalPatroon.Count) - 1;
+                        nieuwePlek = random.Next(1, nieuweOphaalPatroon.Count) - 1;  // Kies de plek waar je hem neerzet
                     }
                     catch
                     {
-                        break;
+                        break; // voor als er geen bedrijven zijn
                     }
-                    if (insertChecker(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek))
+                    if (insertChecker(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek)) // Check of het mogelijk is
                     {
-                        BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
-                        BaseToevoegen(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek);
+                        BaseVerwijderen(ophaalPatroon, verplaatsbareNode); // Verwijder het bedrijf uit het oude ophaalpatroon
+                        BaseToevoegen(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek); // Voeg het bedrijf toe aan het nieuwe ophaalpatroon
                         Program.huidigeKost += incrementeel;
                         return huidigeOphaalpatronen;
                     }
@@ -58,6 +66,7 @@ namespace Grote_Opdracht
                 }
                 tries++;
             }
+
             return huidigeOphaalpatronen;
         }
 
@@ -82,6 +91,7 @@ namespace Grote_Opdracht
                 try
                 {
                     index = random.Next(1, ophaalPatroon.Count) - 1;
+                    if (index == 0 || index == ophaalPatroon.Count - 1) continue;
                 }
                 catch
                 {
@@ -123,6 +133,7 @@ namespace Grote_Opdracht
             return huidigeOphaalpatronen;
         }
 
+        /// Verschuift een bedrijf naar een andere plek binnen hetzelfde ophaalpatroon.
         public static List<DoubleLinkedList> ShiftZelfdeDag(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
             incrementeel = 0;
@@ -131,11 +142,13 @@ namespace Grote_Opdracht
             while (tries < 10) // 10 keer random bedrijf pakken en dan honderd keer kijken of die past
             {
                 int indexOphaalPatroon = random.Next(0, huidigeOphaalpatronen.Count);
+                if (indexOphaalPatroon == 0 || indexOphaalPatroon == huidigeOphaalpatronen.Count - 1) continue;
                 DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[indexOphaalPatroon];
                 int index;
                 try
                 {
                     index = random.Next(1, ophaalPatroon.Count) - 1;
+                    if (index == 0 || index == ophaalPatroon.Count - 1) continue;
                 }
                 catch
                 {
@@ -171,243 +184,83 @@ namespace Grote_Opdracht
             return huidigeOphaalpatronen;
         }
 
-        public static List<DoubleLinkedList> Add (List<DoubleLinkedList> ophaalpatronen)
+        public static List<DoubleLinkedList> Add(List<DoubleLinkedList> ophaalpatronen)
         {
+            if (ophaalpatronen == null || ophaalpatronen.Count == 0)
+            {
+                Console.WriteLine("Null or empty ophaalpatronen list.");
+                return ophaalpatronen;
+            }
+
             GlobaleOphaalPatronen = ophaalpatronen;
+            if (Program.NietBezochteBedrijven == null || Program.NietBezochteBedrijven.Count == 0)
+            {
+                Console.WriteLine("No bedrijven to add.");
+                return ophaalpatronen;
+            }
+
             Bedrijf bedrijf = Program.NietBezochteBedrijven[random.Next(0, Program.NietBezochteBedrijven.Count)];
             incrementeel = -1000;
+
             switch (bedrijf.Frequentie)
             {
-                //elke dag kan
                 case 1:
-                    for(int i = 0; i < 100; i++)
-                    {
-                        DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
-                        int index;
-                        try
-                        {
-                            index = random.Next(1, rit.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        if (insertChecker(rit, bedrijf, index))
-                        {
-                            BaseToevoegen(rit, bedrijf, index);
-                            Program.huidigeKost += incrementeel;
-
-                            return ophaalpatronen;
-                        }
-                    }
+                    AddToRandomDays(ophaalpatronen, bedrijf, 1, 100);
                     break;
                 case 2:
-                    for (int tries2 = 0; tries2 < 10; tries2++)
-                    {
-                        //ma-do of di-vr
-                        int temp = (random.Next(0, 2)) * 2;
-
-                        DoubleLinkedList rit = ophaalpatronen[random.Next(0, 2) + temp];
-                        int index;
-                        try
-                        {
-                            index = random.Next(1, rit.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries21 = 0;
-                        while (!insertChecker(rit, bedrijf, index) && tries21 < 50)
-                        {
-                            rit = ophaalpatronen[random.Next(0, 2)];
-                            index = random.Next(1, rit.Count) - 1;
-                            tries21++;
-                        }
-
-                        DoubleLinkedList rit2 = ophaalpatronen[random.Next(6, 8) + temp];
-                        int index2;
-                        try
-                        {
-                            index2 = random.Next(1, rit2.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries22 = 0;
-                        while (!insertChecker(rit2, bedrijf, index2) && tries22 < 50)
-                        {
-                            rit2 = ophaalpatronen[random.Next(6, 8) + temp];
-                            index2 = random.Next(1, rit2.Count) - 1;
-                            tries22++;
-                        }
-                        if (insertChecker(rit, bedrijf, index) && insertChecker(rit2, bedrijf, index2))
-                        {
-                            BaseToevoegen(rit, bedrijf, index);
-                            BaseToevoegen(rit2, bedrijf, index2);
-                            Program.huidigeKost += incrementeel;
-                            return ophaalpatronen;
-                        }
-                        
-                    
-                    }
+                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } }, 10);
                     break;
-                //ma-wo-vr
                 case 3:
-                    int tries = 0;
-                    while (tries < 300) 
-                    {
-                        DoubleLinkedList rit = ophaalpatronen[random.Next(0, 2)];
-                        int index;
-                        try
-                        {
-                            index = random.Next(1, rit.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        while (!insertChecker(rit, bedrijf, index) && tries<100)
-                        {
-                            rit = ophaalpatronen[random.Next(0, 2)];
-                            index = random.Next(1, rit.Count) - 1;
-                            tries++;
-                        }
-
-                        DoubleLinkedList rit2 = ophaalpatronen[random.Next(4, 6)];
-                        int index2;
-                        try
-                        {
-                            index2 = random.Next(1, rit2.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        while (!insertChecker(rit2, bedrijf, index2) && tries < 200)
-                        {
-                            rit2 = ophaalpatronen[random.Next(4, 6)];
-                            index2 = random.Next(1, rit2.Count) - 1;
-                            tries++;
-                        }
-
-                        DoubleLinkedList rit3 = ophaalpatronen[random.Next(8, 10)];
-                        int index3;
-                        try
-                        {
-                            index3 = random.Next(1, rit3.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        while (!insertChecker(rit3, bedrijf, index3) && tries < 300)
-                        {
-                            rit3 = ophaalpatronen[random.Next(8, 10)];
-                            index3 = random.Next(1, rit3.Count) - 1;
-                            tries++;
-                        }
-                        if(insertChecker(rit, bedrijf, index) && insertChecker(rit2, bedrijf, index2) && insertChecker(rit3, bedrijf, index3))
-                        {
-                            BaseToevoegen(rit, bedrijf, index);
-                            BaseToevoegen(rit2, bedrijf, index2);
-                            BaseToevoegen(rit3, bedrijf, index3);
-                            Program.huidigeKost += incrementeel;
-                            return ophaalpatronen;
-                        }
-                    }
+                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } }, 300);
                     break;
-                //ma-di-wo-do  of  di-wo-do-vr
                 case 4:
-                    for (int tries4 = 0; tries4 < 10; tries4++)
-                    {
-                        //ma-do of di-vr
-                        int temp = (random.Next(0, 2)) * 2;
-
-                        DoubleLinkedList rit = ophaalpatronen[random.Next(0, 2) + temp];
-                        int index;
-                        try
-                        {
-                            index = random.Next(1, rit.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries41 = 0;
-                        while (!insertChecker(rit, bedrijf, index) && tries41 < 50)
-                        {
-                            rit = ophaalpatronen[random.Next(0, 2)];
-                            index = random.Next(1, rit.Count) - 1;
-                            tries41++;
-                        }
-
-                        DoubleLinkedList rit2 = ophaalpatronen[random.Next(2, 4) + temp];
-                        int index2;
-                        try
-                        {
-                            index2 = random.Next(1, rit2.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries42 = 0;
-                        while (!insertChecker(rit2, bedrijf, index2) && tries42 < 50)
-                        {
-                            rit2 = ophaalpatronen[random.Next(4, 6) + temp];
-                            index2 = random.Next(1, rit2.Count) - 1;
-                            tries42++;
-                        }
-
-                        DoubleLinkedList rit3 = ophaalpatronen[random.Next(4, 6) + temp];
-                        int index3;
-                        try
-                        {
-                            index3 = random.Next(1, rit3.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries43 = 0;
-                        while (!insertChecker(rit3, bedrijf, index3) && tries43 < 50)
-                        {
-                            rit3 = ophaalpatronen[random.Next(8, 10) + temp];
-                            index3 = random.Next(1, rit3.Count) - 1;
-                            tries43++;
-                        }
-                        DoubleLinkedList rit4 = ophaalpatronen[random.Next(6, 8) + temp];
-                        int index4;
-                        try
-                        {
-                            index4 = random.Next(1, rit4.Count) - 1;
-                        }
-                        catch
-                        {
-                            break;
-                        }
-                        int tries44 = 0;
-                        while (!insertChecker(rit4, bedrijf, index4) && tries44 < 50)
-                        {
-                            rit4 = ophaalpatronen[(random.Next(12, 14) + temp )%15];
-                            index4 = random.Next(1, rit4.Count) - 1;
-                            tries44++;
-                        }
-                        if (insertChecker(rit, bedrijf, index) && insertChecker(rit2, bedrijf, index2) && insertChecker(rit3, bedrijf, index3) && insertChecker(rit4, bedrijf, index4))
-                        {
-                            BaseToevoegen(rit, bedrijf, index);
-                            BaseToevoegen(rit2, bedrijf, index2);
-                            BaseToevoegen(rit3, bedrijf, index3);
-                            BaseToevoegen(rit4, bedrijf, index4);
-                            Program.huidigeKost += incrementeel;
-                            return ophaalpatronen;
-                        }
-                    }
+                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } }, 10);
                     break;
             }
+
             return ophaalpatronen;
+        }
+
+        private static void AddToRandomDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int frequency, int maxTries)
+        {
+            for (int i = 0; i < maxTries; i++)
+            {
+                DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
+                int index = GetRandomIndex(rit);
+                if (index == 0 || index == rit.Count - 1) continue;
+
+                if (insertChecker(rit, bedrijf, index))
+                {
+                    BaseToevoegen(rit, bedrijf, index);
+                    Program.huidigeKost += incrementeel;
+                    return;
+                }
+            }
+        }
+
+        private static void AddToSpecificDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int[][] dayGroups, int maxTries)
+        {
+            for (int tries = 0; tries < maxTries; tries++)
+            {
+                foreach (var days in dayGroups)
+                {
+                    DoubleLinkedList rit = ophaalpatronen[random.Next(days[0], days[1] + 1)];
+                    int index = GetRandomIndex(rit);
+                    if (index == 0 || index == rit.Count - 1 || index == -1) continue;
+                    if (insertChecker(rit, bedrijf, index))
+                    {
+                        BaseToevoegen(rit, bedrijf, index);
+                        Program.huidigeKost += incrementeel;
+                        return;
+                    }
+                }
+            }
+        }
+
+        private static int GetRandomIndex(DoubleLinkedList rit)
+        {
+            if (rit == null || rit.Count == 0) return -1;
+            return random.Next(1, rit.Count) - 1;
         }
 
         public static List<DoubleLinkedList> Delete(List<DoubleLinkedList> huidigeOphaalpatronen)
@@ -419,6 +272,7 @@ namespace Grote_Opdracht
 
             // Kies een willekeurige bedrijf in het ophaalpatroon
             int BedrijfIndex = random.Next(1, randomPatroon.Count) - 1;
+            if (BedrijfIndex == 0 || BedrijfIndex == randomPatroon.Count - 1) return huidigeOphaalpatronen;
 
             // Haal het bedrijf en de bijbehorende node op
             Bedrijf verwijderBedrijf = randomPatroon.Index(BedrijfIndex).data;
@@ -451,7 +305,7 @@ namespace Grote_Opdracht
 
         }
 
-        public static bool insertChecker(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index)
+        public static bool insertChecker(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index) // Check of het bedrijf op de gegeven index in het ophaalpatroon past
         {
             try
             {
@@ -477,54 +331,50 @@ namespace Grote_Opdracht
 
         public static bool CheckGrenzen(DoubleLinkedList ophaalpatroon, int index, Bedrijf bedrijf)
         {
+            if (bedrijf == null || ophaalpatroon == null || ophaalpatroon.Index(index) == null) // Zorg ervoor dat er geen null reference exceptions zijn
+            {
+                Console.WriteLine("Null reference encountered in CheckGrenzen.");
+                return false;
+            }
+
             bool tijd = false;
             bool volume = false;
 
-            if (index == 0)
+            Node nodeVorigeBedrijf = ophaalpatroon.Index(index - 1);
+            if (nodeVorigeBedrijf == null || nodeVorigeBedrijf.data == null || nodeVorigeBedrijf.next == null || nodeVorigeBedrijf.next.data == null)
             {
-                return true;
-            }
-            else
-            {
-                // Anders, controleer de vorige node en het nieuwe bedrijf op tijd en volume
-                Node nodeVorigeBedrijf = ophaalpatroon.Index(index - 1);
-                Bedrijf vorigeBedrijf = nodeVorigeBedrijf.data;
-
-                // Controleer of het binnen de tijd past
-
-                double totaleTijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] - Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data) + Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf) + Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data) + bedrijf.LedigingsDuurMinuten;
-
-                if (totaleTijd < 570 * 60)
-                    tijd = true;
-
-                // Controleer of afval past
-                if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
-                    volume = true;
+                return false;
             }
 
-            //incrementele kosten berekenenen:
+            Bedrijf vorigeBedrijf = nodeVorigeBedrijf.data;
+            double totaleTijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] - Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data) + Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf) + Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data) + bedrijf.LedigingsDuurMinuten;
+
+            if (totaleTijd < 570 * 60)
+                tijd = true;
+
+            Program.BerekenHuidigeVolume(GlobaleOphaalPatronen);
+            if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
+                volume = true;
+            
+
             double incrementeleKosten = 0;
-            if (ophaalpatroon.Index(index).previous != null)
+            if (ophaalpatroon.Index(index).previous != null || ophaalpatroon.Index(index).next != null)
             {
                 incrementeleKosten += Program.AfstandenMatrix[ophaalpatroon.Index(index).previous.data.MatrixID, bedrijf.MatrixID];
                 incrementeleKosten += Program.AfstandenMatrix[bedrijf.MatrixID, ophaalpatroon.Index(index).next.data.MatrixID];
                 incrementeleKosten -= Program.AfstandenMatrix[ophaalpatroon.Index(index).previous.data.MatrixID, ophaalpatroon.Index(index).next.data.MatrixID];
             }
-            else
+            else if (ophaalpatroon.Index(index).next != null)
             {
                 incrementeleKosten += Program.AfstandenMatrix[BeginOplossing.stortPlaats.MatrixID, bedrijf.MatrixID];
                 incrementeleKosten += Program.AfstandenMatrix[bedrijf.MatrixID, ophaalpatroon.Index(index).next.data.MatrixID];
                 incrementeleKosten -= Program.AfstandenMatrix[BeginOplossing.stortPlaats.MatrixID, ophaalpatroon.Index(index).next.data.MatrixID];
             }
-
             incrementeel += incrementeleKosten;
             bool incrementeelCheck = CheckAccepteerOplossing();
             if (tijd && volume && incrementeelCheck)
                 return true;
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool CheckAccepteerOplossing()
@@ -534,79 +384,75 @@ namespace Grote_Opdracht
 
         static void BaseVerwijderen(DoubleLinkedList ophaalpatroon, Node nodeBedrijf)
         {
+            if (ophaalpatroon == null || nodeBedrijf == null || nodeBedrijf.data == null)
+            {
+               Console.WriteLine("Null reference encountered in BaseVerwijderen.");
+                return;
+            }
 
-                try
-                {
-                    Program.NietBezochteBedrijven.Add(nodeBedrijf.data);
+            try
+            {
+               Program.NietBezochteBedrijven.Add(nodeBedrijf.data);
 
-                    //tijd aanpassen
-                    if (nodeBedrijf.previous != null)
-                    {
-                        double temp = 0;
-                        temp = temp - Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.data);
-                        temp = temp - Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
-                        temp = temp + Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.next.data);
-                        temp = temp + nodeBedrijf.data.LedigingsDuurMinuten;
-
-                        incrementeel += temp;
-
-                        Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
-                    }
-                    else
-                    {
-                        double temp = 0;
-                        temp = temp - Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.data);
-                        temp = temp - Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
-                        temp = temp + Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.next.data);
-                        temp = temp + nodeBedrijf.data.LedigingsDuurMinuten;
-                        incrementeel += temp;
-
-                        Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
-                    }
-                    //volume aanpassen
-                    Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] -= nodeBedrijf.data.VolumePerContainer * nodeBedrijf.data.AantContainers;
-
-                    ophaalpatroon.Remove(nodeBedrijf);
+               double temp = 0;
+               if (nodeBedrijf.previous != null && nodeBedrijf.next != null && nodeBedrijf.next.data != null)
+               {
+                  temp -= Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.data);
+                  temp -= Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
+                 temp += Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.next.data);
+                 temp -= nodeBedrijf.data.LedigingsDuurMinuten;
                 }
-                catch (Exception e)
+                else if (nodeBedrijf.next != null && nodeBedrijf.next.data != null)
                 {
+                temp -= Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.data);
+                temp -= Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
+                temp += Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.next.data);
+                temp -= nodeBedrijf.data.LedigingsDuurMinuten;
+                }   
 
-                }
+                incrementeel += temp;
+                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
 
+                Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] -= nodeBedrijf.data.VolumePerContainer * nodeBedrijf.data.AantContainers;
+
+                ophaalpatroon.Remove(nodeBedrijf);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception encountered in BaseVerwijderen: {e.Message}");
+            }
         }
 
         static void BaseToevoegen(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index)
         {
+            if (ophaalpatroon == null || bedrijf == null)
+            {
+                 Console.WriteLine("Null reference encountered in BaseToevoegen.");
+                return;
+            }
+
             Program.NietBezochteBedrijven.Remove(bedrijf);
             Node nodeBedrijf = new Node(bedrijf);
             ophaalpatroon.InsertAtIndex(nodeBedrijf, index);
 
-            //tijden aanpassen
-            if (nodeBedrijf.previous != null)
+            double temp = 0;
+            if (nodeBedrijf.previous != null && nodeBedrijf.next != null && nodeBedrijf.next.data != null)
             {
-                double temp = 0;
-                temp = temp + Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.data);
-                temp = temp + Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
-                temp = temp - Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.next.data);
-                temp = temp - nodeBedrijf.data.LedigingsDuurMinuten;
-
-                incrementeel += temp;
-
-                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
-            }
-            else
+                temp += Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.data);
+                temp += Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
+                temp -= Program.TijdTussenBedrijven(nodeBedrijf.previous.data, nodeBedrijf.next.data);
+                temp += nodeBedrijf.data.LedigingsDuurMinuten;
+        }
+            else if (nodeBedrijf.next != null && nodeBedrijf.next.data != null)
             {
-                double temp = 0;
-                temp = temp + Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.data);
-                temp = temp + Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
-                temp = temp - Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.next.data);
-                temp = temp - nodeBedrijf.data.LedigingsDuurMinuten;
-
-                incrementeel += temp;
-
-                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                temp += Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.data);
+                temp += Program.TijdTussenBedrijven(nodeBedrijf.data, nodeBedrijf.next.data);
+                temp -= Program.TijdTussenBedrijven(BeginOplossing.stortPlaats, nodeBedrijf.next.data);
+                temp += nodeBedrijf.data.LedigingsDuurMinuten;
             }
 
+            incrementeel += temp;
+            Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
         }
 
         public static List<DoubleLinkedList> Toevoegen(List<DoubleLinkedList> huidigeOphaalpatronen)
@@ -624,6 +470,7 @@ namespace Grote_Opdracht
                     Bedrijf nieuwBedrijf = nieuwBedrijfsNode.data;
                     DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)];
                     int index = random.Next(0, ophaalPatroon.Count);
+                    if (index == 0 || index == ophaalPatroon.Count - 1) continue;
                     if (insertChecker(ophaalPatroon, nieuwBedrijf, index))
                     {
                         ophaalPatroon.InsertAtIndex(nieuwBedrijfsNode, index);
