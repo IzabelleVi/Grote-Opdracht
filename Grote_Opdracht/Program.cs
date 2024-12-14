@@ -83,7 +83,7 @@ class Program //functioneel
         {
             Console.WriteLine($"Fout bij inlezen bedrijfsgegevens: {ex.Message}");
         }
-        NietBezochteBedrijven = new List<Bedrijf>(bedrijven);
+        NietBezochteBedrijven = bedrijven;
 
         return bedrijven;
     }
@@ -110,10 +110,10 @@ class Program //functioneel
 
     public static (List<DoubleLinkedList> besteOphaalPatronen, double huidigeKost) OptimaliseerOphaalpatronen()
     {
-        double allerBesteKost = 1000000000;
+        double allerBesteKost = 10000000;
         List<DoubleLinkedList> allerBesteOphaalpatronen = new List<DoubleLinkedList>();
         int x = 1;
-        while (x < 100000) // Hoeveelheid itteraties dat we het programma opnieuw starten met een nieuwe begin oplossing
+        while (x < 1000) // Hoeveelheid itteraties dat we het programma opnieuw starten met een nieuwe begin oplossing
         {
 
             // Simulated Annealing-parameters
@@ -123,12 +123,27 @@ class Program //functioneel
             // Parameters op 0 zetten, bij eerste oplossing
             Clean_bedrijven();
             Rijtijd.Clear();
+            for (int i = 0; i < 10; i++)
+            {
+                Rijtijd.Add(0);
+            }
+            //Console.WriteLine("Begin oplossing gecleared");
 
             // Genereren van een beginoplossing
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
+            //Console.WriteLine("Begin oplossing gegenereerd");
 
-            // Bereken de totale tijd van de Oplossing
-            double totaleTijd = BerekenTotaleTijd(huidigeOphaalpatronen);
+            // laat de huidige oplossing zien
+            foreach (var patroon in huidigeOphaalpatronen)
+            {
+                Node current = patroon.head;
+                //Console.WriteLine("Nieuw patroon begint nu, dit zijn de huisige gebruikte bedrijven");
+                while (current != null)
+                {
+                    //Console.WriteLine(current.data.Plaats);
+                    current = current.next;
+                }
+            }
 
             // Evalueren van de kost van de huidige oplossing
             huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen);
@@ -150,10 +165,12 @@ class Program //functioneel
                 iteratie++;
             }
             // Checken of betere oplossing gevonden is.
+            Console.WriteLine($"Huidige kost: {huidigeKost} en de beste kost is: {allerBesteKost}");
             if (huidigeKost < allerBesteKost)
             {
                 allerBesteKost = huidigeKost;
                 allerBesteOphaalpatronen = huidigeOphaalpatronen;
+                Console.WriteLine("Nieuwe beste oplossing gevonden");
             }
 
             // Elke 100 itteraties de huidige beste oplossing printen
@@ -210,7 +227,6 @@ class Program //functioneel
                 break;
         }
         return null;
-
     }
 
     static void ToonResultaten(List<DoubleLinkedList> besteOphaalpatronen, double besteKost) // niet functioneel
@@ -271,19 +287,31 @@ class Program //functioneel
 
     static double BerekenTotaleTijd(List<DoubleLinkedList> ophaalpatronen) //functioneel
     {
+        Rijtijd.Clear();
+        for (int i = 0; i < 10; i++)
+        {
+            Rijtijd.Add(0);
+        }
         double totalenTijd = 0;
         // de tijd:
         foreach (var patroon in ophaalpatronen)
         {
+            int k = 0;
             Node bedrijf = patroon.head;
             //Console.WriteLine(patroon.head.data.Plaats + " dit is bedrijf 1. Bedrijf 2 is: " + bedrijf.next.data.Plaats);
             for (int i = 0; i < ophaalpatronen.Count-1; i++)
             {
-                Rijtijd[i] += TijdTussenBedrijven(bedrijf.data, bedrijf.next?.data);
-                Rijtijd[i] += bedrijf.data.LedigingsDuurMinuten;
-                //Console.WriteLine(i + " dit patroon duurt zo lang: " + Rijtijd[i]);
+                if (bedrijf.next != null)
+                {
+                    Rijtijd[k] += TijdTussenBedrijven(bedrijf.data, bedrijf.next.data);
+                    Rijtijd[k] += bedrijf.data.LedigingsDuurMinuten;
+                }
+                else
+                {
+                    break;
+                }
                 if (bedrijf.data.MatrixID == 287)
-                    Rijtijd[i] += 30*60; // 30 minuten storten
+                    Rijtijd[k] += 29*60; // 30 minuten storten, min de tijd die al is toegevoegd
                 bedrijf = bedrijf.next;
             }
         }
@@ -295,21 +323,28 @@ class Program //functioneel
         return totalenTijd;
     }
 
-    static List<double> BerekenHuidigeVolume(List<DoubleLinkedList> ophaalpatronen) //functioneel
+    public static List<double> BerekenHuidigeVolume(List<DoubleLinkedList> ophaalpatronen) //functioneel, moet nog wel incrementeel worden gemaakt.
     {
+        Volumes.Clear();
+        int k = 0;
+        for (int i = 0; i < 10; i++)
+        {
+            Volumes.Add(0);
+        }
         foreach (var patroon in ophaalpatronen)
         {
             Node bedrijf = patroon.tail;
             double volume = 0;
-            for (int i = patroon.count-1; i > 0; i--)
+            for (int i = ophaalpatronen.Count-1; i > 0; i--)
             {
                 // Als je langs de stortplaats komt, leeg het volume.
                 if (bedrijf.data.MatrixID == 287)
                     break;
-                volume += bedrijf.data.AantContainers * bedrijf.data.VolumePerContainer;
-                bedrijf = bedrijf.next;
+                volume += (bedrijf.data.AantContainers * bedrijf.data.VolumePerContainer);
+                bedrijf = bedrijf.previous;
             }
-            Volumes.Add(volume);
+            Volumes[k] = volume;
+            k++;
         }
         return Volumes;
     }
@@ -318,10 +353,10 @@ class Program //functioneel
     {
         // de tijd:
         totale_kost = BerekenTotaleTijd(ophaalpatronen);
-
+        //Console.WriteLine($"Totale tijd: {totale_kost}");
         // penalties:
-        totale_kost += NietBezochteBedrijven.Count *1000; // penalty voor niet bezochte bedrijven
-
+        totale_kost += NietBezochteBedrijven.Count*10; // penalty voor niet bezochte bedrijven
+        Console.WriteLine($"Niet bezochte bedrijven: {NietBezochteBedrijven.Count} ");
         return totale_kost;
     }
 
