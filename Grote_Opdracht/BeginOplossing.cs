@@ -1,6 +1,4 @@
 // To Do
-// - Het volume wordt niet gereset nadat je langs de stortplaats bent geweest
-// - Volume moet consistent door de begin oplossing of *20 (comprimeren) of je maximale  volume moet 100.00 worden.
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +8,7 @@ namespace Grote_Opdracht
 {
     internal class BeginOplossing
     {
-        private const int MAX_TRUCK_CAPACITY = 20000; // Maximum capacity in liters.
+        private const int MAX_TRUCK_CAPACITY = 100000; // Maximum capacity in liters.
         private const int MAX_TRUCK_TIME_SECONDS = 720 * 60; // 720 minutes per day in seconds.
         private const int DISPOSAL_TIME_SECONDS = 30 * 60; // 30 minutes to dispose of waste.
 
@@ -73,7 +71,8 @@ namespace Grote_Opdracht
             // Calculate current route metrics.
             Node? currentNode = route.head;
             while (currentNode != null) {
-                currentVolume += currentNode.data.VolumePerContainer * currentNode.data.AantContainers;
+                if (currentNode.data == stortPlaats) currentVolume = 0;
+                else currentVolume += currentNode.data.VolumePerContainer * currentNode.data.AantContainers;
                 currentTime += Program.TijdTussenBedrijven(currentNode.previous?.data ?? stortPlaats, currentNode.data);
                 currentNode = currentNode.next;
             }
@@ -88,10 +87,12 @@ namespace Grote_Opdracht
             if (currentVolume + additionalVolume <= MAX_TRUCK_CAPACITY &&
                 currentTime + additionalTime <= MAX_TRUCK_TIME_SECONDS) {
                 route.AddLast(new Node(bedrijf));
-                
+
                 // null if place we add is stortplaats
-                if (remainingVisits != null) remainingVisits[bedrijf]--;
-                Program.NietBezochteBedrijven.Remove(bedrijf);
+                if (remainingVisits != null) {
+                    remainingVisits[bedrijf]--;
+                    Program.NietBezochteBedrijven.Remove(bedrijf); // nodig?
+                }
                 return true;
             }
 
