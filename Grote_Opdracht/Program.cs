@@ -108,25 +108,29 @@ class Program //functioneel
 
     public static (List<DoubleLinkedList> besteOphaalPatronen, double huidigeKost) OptimaliseerOphaalpatronen()
     {
-        double allerBesteKost = 1000000000;
+        double allerBesteKost = double.MaxValue;
         List<DoubleLinkedList> allerBesteOphaalpatronen = new List<DoubleLinkedList>();
         int x = 1;
-        while (x < 100000) // Hoeveelheid itteraties dat we het programma opnieuw starten met een nieuwe begin oplossing
+        Random r = new Random();
+        while (x < 1000) // Hoeveelheid itteraties dat we het programma opnieuw starten met een nieuwe begin oplossing
         {
 
             // Simulated Annealing-parameters
             double initieleTemperatuur = 100.0;
             double afkoelingsfactor = 0.95;
 
-            // Parameters op 0 zetten, bij eerste oplossing)
-            if (x == 1)
-            {
-                Clean_bedrijven();
-                Complete_Rijtijd = 0;
-            }
-
             // Genereren van een beginoplossing
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
+
+            // laat de huidige oplossing zien
+            foreach (var patroon in huidigeOphaalpatronen)
+            {
+                Node current = patroon.head;
+                while (current != null)
+                {
+                    current = current.next;
+                }
+            }
 
             // Evalueren van de kost van de huidige oplossing
             huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen);
@@ -135,10 +139,16 @@ class Program //functioneel
             int iteratie = 0;
             temperatuur = initieleTemperatuur;
 
-            while (iteratie < maxIteraties && temperatuur > 0.1)
+            while (iteratie < maxIteraties)
             {
                 // Genereren van een buuroplossing
-                BuurRuimteBepalen(huidigeOphaalpatronen);
+                List<DoubleLinkedList> buurOplossing = BuurRuimteBepalen(huidigeOphaalpatronen);
+                double buurOplKost = BerekenTotaleKost(buurOplossing);
+                if (buurOplKost < huidigeKost || buurOplKost >= huidigeKost && r.NextDouble() <= Math.Pow(Math.E, -(buurOplKost - huidigeKost) / temperatuur))
+                {
+                    huidigeKost = buurOplKost;
+                    huidigeOphaalpatronen = buurOplossing;
+                }
 
                 // Koel het systeem af
                 if (iteratie % 10 == 0)
@@ -147,25 +157,23 @@ class Program //functioneel
                 // Incrementeer de iteratie
                 iteratie++;
             }
-            // Checken of betere oplossing gevonden is.
             if (huidigeKost < allerBesteKost)
             {
-                allerBesteKost = huidigeKost;
                 allerBesteOphaalpatronen = huidigeOphaalpatronen;
+                allerBesteKost = huidigeKost;
             }
 
             // Elke 100 itteraties de huidige beste oplossing printen
-            x++;
-            if (x % 100 == 0)
-            {
-                Console.WriteLine($"{x}: incr:{allerBesteKost}, tot = {BerekenTotaleKost(allerBesteOphaalpatronen)}");
-            }
-            
+            //x++;
+            //if (x % 100 == 0)
+            //{
+            //    Console.WriteLine($"{x}: incr:{allerBesteKost}, tot = {BerekenTotaleKost(allerBesteOphaalpatronen)}");
+            //}
+
         }
         // Print & returned de beste oplossing
-        ToonResultaten(allerBesteOphaalpatronen, allerBesteKost);
         return (allerBesteOphaalpatronen, allerBesteKost);
-        
+
     }
 
     static List<DoubleLinkedList> RittenSamenvoegen(List<DoubleLinkedList> allerBesteOphaalpatronen) //  Wordt niet gebruikt

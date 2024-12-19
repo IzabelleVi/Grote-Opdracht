@@ -8,19 +8,24 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\lenna\\.nuget\\packages\\": {}
+    "C:\\Users\\goofv\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lenna\\Documents\\School\\jaar 2\\INFOOPT\\grootste-opdracht\\Grote_Opdracht\\Grote_Opdracht.csproj",
+      "projectUniqueName": "C:\\Users\\goofv\\OneDrive\\Documenten\\GitHub\\Grote-Opdracht\\Grote_Opdracht\\Grote_Opdracht.csproj",
       "projectName": "Grote_Opdracht",
-      "projectPath": "C:\\Users\\lenna\\Documents\\School\\jaar 2\\INFOOPT\\grootste-opdracht\\Grote_Opdracht\\Grote_Opdracht.csproj",
-      "packagesPath": "C:\\Users\\lenna\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lenna\\Documents\\School\\jaar 2\\INFOOPT\\grootste-opdracht\\Grote_Opdracht\\obj\\",
+      "projectPath": "C:\\Users\\goofv\\OneDrive\\Documenten\\GitHub\\Grote-Opdracht\\Grote_Opdracht\\Grote_Opdracht.csproj",
+      "packagesPath": "C:\\Users\\goofv\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\goofv\\OneDrive\\Documenten\\GitHub\\Grote-Opdracht\\Grote_Opdracht\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\lenna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\goofv\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -28,6 +33,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -61,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }
