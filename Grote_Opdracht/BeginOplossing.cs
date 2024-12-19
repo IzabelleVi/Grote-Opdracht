@@ -45,12 +45,7 @@ namespace Grote_Opdracht
 
                     foreach (int day in days) {
                         int truckIndex = day * 2 + random.Next(0, 2); // Choose one of two trucks for the day.
-                        if (!AssignToRoute(routes[truckIndex], bedrijf, remainingVisits)) {
-                            if (AssignToRoute(routes[truckIndex], stortPlaats, null)) {
-                                AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); // Dispose of garbage at stortplaats and try again
-                            }
-                            else Console.WriteLine("Impossible to return to startPlaats in time, route not possible"); // Try harder
-                        }
+                        TryAssign(truckIndex, bedrijf, false);
                     }
                 }
             }
@@ -61,6 +56,23 @@ namespace Grote_Opdracht
             }
 
             return routes;
+
+            void TryAssign(int truckIndex, Bedrijf bedrijf, bool retry) // could eventually return a bool to look if operation was succesful
+            {
+                if (AssignToRoute(routes[truckIndex], bedrijf, remainingVisits)) return;
+
+                if (AssignToRoute(routes[truckIndex], stortPlaats, null)) {
+                    AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); // Dispose of garbage at stortplaats and try again
+                } 
+                else if (retry) return;
+                else {
+                    int differentDayTruck; // Get the difference in number of the other truck, 1 or -1
+                    if (truckIndex % 2 == 0) differentDayTruck = 1;
+                    else differentDayTruck = -1;
+                    TryAssign(truckIndex + differentDayTruck, bedrijf, true);
+                }
+                
+            }
         }
 
         private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits)
