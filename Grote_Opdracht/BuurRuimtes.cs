@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Grote_Opdracht
 {
     internal class BuurRuimtes
@@ -72,20 +65,20 @@ namespace Grote_Opdracht
 
         public static List<DoubleLinkedList> ShiftAndereTruck(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
-            incrementeel = 0;
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
+            incrementeel = 0;
             int tries = 0;
-            while (tries < 11) // 10 keer random bedrijf pakken en dan honderd keer kijken of die past
+            while (tries <= 10) // 10 times try to pick a random bedrijf and then 100 times check if it fits
             {
                 tries++;
                 int Dag1 = random.Next(0, huidigeOphaalpatronen.Count);
-                int dag2;
-                if (Dag1 == 14)
-                    dag2 = Dag1 - 1;
-                else if (Dag1 % 2 == 0)
-                    dag2 = Dag1 + 1;
-                else
-                    dag2 = Dag1 - 1;
+                int dag2 = (Dag1 % 2 == 0) ? Dag1 + 1 : Dag1 - 1;
+
+                if (dag2 < 0 || dag2 >= huidigeOphaalpatronen.Count)
+                {
+                    continue; // Skip als dag twee negatief of te groot
+                }
+
                 DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[Dag1];
                 int index;
                 try
@@ -103,11 +96,7 @@ namespace Grote_Opdracht
                 int tries2 = 0;
                 while (tries2 < 100)
                 {
-                    DoubleLinkedList nieuweOphaalPatroon;
-                    if (random.Next(0,2) == 1)
-                        nieuweOphaalPatroon = huidigeOphaalpatronen[Dag1];
-                    else
-                        nieuweOphaalPatroon = huidigeOphaalpatronen[dag2];
+                    DoubleLinkedList nieuweOphaalPatroon = (random.Next(0, 2) == 1) ? GlobaleOphaalPatronen[Dag1] : GlobaleOphaalPatronen[dag2];
                     int nieuwePlek;
                     try
                     {
@@ -126,14 +115,12 @@ namespace Grote_Opdracht
                     }
                     tries2++;
                 }
-
-                
             }
-            Console.WriteLine("Shift andere truck is niet gelukt");
+            //Console.WriteLine("Shift andere truck is niet gelukt");
             return huidigeOphaalpatronen;
         }
 
-        /// Verschuift een bedrijf naar een andere plek binnen hetzelfde ophaalpatroon.
+        // Verschuift een bedrijf naar een andere plek binnen hetzelfde ophaalpatroon.
         public static List<DoubleLinkedList> ShiftZelfdeDag(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
             incrementeel = 0;
@@ -202,60 +189,82 @@ namespace Grote_Opdracht
             Bedrijf bedrijf = Program.NietBezochteBedrijven[random.Next(0, Program.NietBezochteBedrijven.Count)];
             incrementeel = -1000;
 
+            bool added = false;
             switch (bedrijf.Frequentie)
             {
                 case 1:
-                    AddToRandomDays(ophaalpatronen, bedrijf, 1, 100);
+                    added = AddToRandomDays(ophaalpatronen, bedrijf, 100);
                     break;
                 case 2:
-                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } }, 10);
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } }, 10);
                     break;
                 case 3:
-                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } }, 300);
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } }, 300);
                     break;
                 case 4:
-                    AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } }, 10);
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } }, 10);
                     break;
+            }
+
+            if (added)
+            {
+                Program.NietBezochteBedrijven.Remove(bedrijf);
             }
 
             return ophaalpatronen;
-        }
-
-        private static void AddToRandomDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int frequency, int maxTries)
-        {
-            for (int i = 0; i < maxTries; i++)
-            {
-                DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
-                int index = GetRandomIndex(rit);
-                if (index == 0 || index == rit.Count - 1) continue;
-
-                if (insertChecker(rit, bedrijf, index))
-                {
-                    BaseToevoegen(rit, bedrijf, index);
-                    Program.huidigeKost += incrementeel;
-                    return;
-                }
             }
-        }
-
-        private static void AddToSpecificDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int[][] dayGroups, int maxTries)
-        {
-            for (int tries = 0; tries < maxTries; tries++)
+// Maandag: 01, Dinsdag 23, Woensdag 45, Donderdag 67, Vrijdag 89
+            private static bool AddToRandomDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int maxTries)
             {
-                foreach (var days in dayGroups)
+                for (int i = 0; i < maxTries; i++)
                 {
-                    DoubleLinkedList rit = ophaalpatronen[random.Next(days[0], days[1] + 1)];
+                    DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
                     int index = GetRandomIndex(rit);
-                    if (index == 0 || index == rit.Count - 1 || index == -1) continue;
+                    if (index == 0 || index == rit.Count - 1) continue;
+
                     if (insertChecker(rit, bedrijf, index))
                     {
                         BaseToevoegen(rit, bedrijf, index);
                         Program.huidigeKost += incrementeel;
-                        return;
+                        return true;
                     }
                 }
+                return false;
             }
-        }
+
+            private static bool AddToSpecificDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf, int[][] dayGroups, int maxTries)
+            {
+                for (int tries = 0; tries < maxTries; tries++)
+                {
+                    foreach (var days in dayGroups)
+                    {
+                        bool added = true;
+                        foreach (int day in days)
+                        {
+                            DoubleLinkedList rit = ophaalpatronen[day];
+                            int index = GetRandomIndex(rit);
+                            if (index == 0 || index == rit.Count - 1 || index == -1 || !insertChecker(rit, bedrijf, index))
+                            {
+                                added = false;
+                                break;
+                            }
+                        }
+
+                        if (added)
+                        {
+                            foreach (int day in days)
+                            {
+                                DoubleLinkedList rit = ophaalpatronen[day];
+                                int index = GetRandomIndex(rit);
+                                BaseToevoegen(rit, bedrijf, index);
+                                Program.huidigeKost += incrementeel;
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
 
         private static int GetRandomIndex(DoubleLinkedList rit)
         {
@@ -265,7 +274,6 @@ namespace Grote_Opdracht
 
         public static List<DoubleLinkedList> Delete(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
-            incrementeel = 1000;
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
             // Kies een willekeurig ophaalpatroon
             DoubleLinkedList randomPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)];
@@ -277,34 +285,71 @@ namespace Grote_Opdracht
             // Haal het bedrijf en de bijbehorende node op
             Bedrijf verwijderBedrijf = randomPatroon.Index(BedrijfIndex).data;
             Node verwijderBedrijfNode = randomPatroon.Index(BedrijfIndex);
-            //Console.WriteLine(randomPatroon.Count + " <- hoeveelheid bedrijven Delete");
             if (verwijderBedrijf.Plaats == "Stortplaats") return huidigeOphaalpatronen;
-            // Gebaseerd op de frequentie van het bedrijf, bepaal welke andere dagen moeten worden verwijderd
-            if (verwijderBedrijf.Frequentie == 1)
+
+            // Verwijder het bedrijf van alle routes gebasseerd op de frequenties
+            int[][] dayGroups = null;
+            switch (verwijderBedrijf.Frequentie)
             {
-                    // Een keer per week
-                BaseVerwijderen(randomPatroon, verwijderBedrijfNode);
-                verwijderBedrijf.langsGeweest--;
-            } 
-            else
+                case 1:
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } };
+                    break;
+                case 2:
+                    dayGroups = new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } };
+                    break;
+                case 3:
+                    dayGroups = new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } };
+                    break;
+                case 4:
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } };
+                    break;
+            }
+
+            // Verwijder het bedrijf van alle routes op de specifieke dagen
+            foreach (var days in dayGroups)
             {
-                // Twee keer per week
-                foreach (var patroon in huidigeOphaalpatronen)
+                foreach (int day in days)
                 {
+                    DoubleLinkedList patroon = huidigeOphaalpatronen[day];
                     Node mogelijkeVerwijderBedrijf = patroon.Find(verwijderBedrijf);
-                    if (mogelijkeVerwijderBedrijf!= null)
+                    if (mogelijkeVerwijderBedrijf != null)
                     {
                         BaseVerwijderen(patroon, mogelijkeVerwijderBedrijf);
-                        
+                        verwijderBedrijf.langsGeweest--;
+                        // Update the cost by removing the travel time and adding the penalty
+                        Program.huidigeKost += BerekenVerwijderKost(patroon, mogelijkeVerwijderBedrijf);
+                        Program.huidigeKost += verwijderBedrijf.LedigingsDuurMinuten * verwijderBedrijf.AantContainers * 3 * 60; //penalty
                     }
                 }
-
             }
-            Program.huidigeKost += incrementeel;
-            return huidigeOphaalpatronen;
 
+            // Voeg het bedrijf terug toe aan de NietBezochteBedrijven lijst
+            Program.NietBezochteBedrijven.Add(verwijderBedrijf);
+
+            return huidigeOphaalpatronen;
         }
 
+        private static double BerekenVerwijderKost(DoubleLinkedList patroon, Node verwijderBedrijfNode)
+        {
+            double verwijderKost = 0;
+
+            // Bereken de kost van het verwijderen van het bedrijf
+            if (verwijderBedrijfNode.previous != null && verwijderBedrijfNode.next != null)
+            {
+                Bedrijf prevBedrijf = verwijderBedrijfNode.previous.data;
+                Bedrijf nextBedrijf = verwijderBedrijfNode.next.data;
+                verwijderKost =  - BerekenReisTijd(prevBedrijf, verwijderBedrijfNode.data) - BerekenReisTijd(verwijderBedrijfNode.data, nextBedrijf) - (verwijderBedrijfNode.data.LedigingsDuurMinuten * 60);
+            }
+
+            return verwijderKost;
+        }
+
+        private static double BerekenReisTijd(Bedrijf bedrijf1, Bedrijf bedrijf2)
+        {
+            return Program.TijdTussenBedrijven(bedrijf1, bedrijf2);
+        }
+
+//MMMMMMMMMMMMMMKWEDSRFGHNMV<KJHYGTERFEDAFSGHJKVGCRFEWDQWSFZGRDXHCJVKGCXDZRFSEDWSEDFSZRGDXHFCJGVHCFGDFRSEDAWRFZSGTXDHCFJVGCHGTRFED
         public static bool insertChecker(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index) // Check of het bedrijf op de gegeven index in het ophaalpatroon past
         {
             try
@@ -328,10 +373,9 @@ namespace Grote_Opdracht
             }
             return true;
         }
-
         public static bool CheckGrenzen(DoubleLinkedList ophaalpatroon, int index, Bedrijf bedrijf)
         {
-            if (bedrijf == null || ophaalpatroon == null || ophaalpatroon.Index(index) == null) // Zorg ervoor dat er geen null reference exceptions zijn
+            if (bedrijf == null || ophaalpatroon == null || ophaalpatroon.Index(index) == null) // Ensure no null reference exceptions
             {
                 Console.WriteLine("Null reference encountered in CheckGrenzen.");
                 return false;
@@ -347,7 +391,16 @@ namespace Grote_Opdracht
             }
 
             Bedrijf vorigeBedrijf = nodeVorigeBedrijf.data;
-            double totaleTijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] - Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data) + Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf) + Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data) + bedrijf.LedigingsDuurMinuten;
+            //MMMMMMMMMMMMMMKWEDSRFGHNMV<KJHYGTERFEDAFSGHJKVGCRFEWDQWSFZGRDXHCJVKGCXDZRFSEDWSEDFSZRGDXHFCJGVHCFGDFRSEDAWRFZSGTXDHCFJVGCHGTRFED
+            //Console.WriteLine($"Patroon nummer: {GlobaleOphaalPatronen.IndexOf(ophaalpatroon)}, Hoeveelheid rij tijden: {Program.Rijtijd.Count}");
+            double huidigeRijtijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)];
+        
+            double tijdTussenVorigeEnVolgende = Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data);
+            double tijdTussenVorigeEnNieuwe = Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf);
+            double tijdTussenNieuweEnVolgende = Program.TijdTussenBedrijven(bedrijf, nodeVorigeBedrijf.next.data);
+            double ledigingsDuur = bedrijf.LedigingsDuurMinuten;
+
+            double totaleTijd = huidigeRijtijd - tijdTussenVorigeEnVolgende + tijdTussenVorigeEnNieuwe + tijdTussenNieuweEnVolgende + ledigingsDuur;
 
             if (totaleTijd < 570 * 60)
                 tijd = true;
@@ -355,7 +408,6 @@ namespace Grote_Opdracht
             Program.BerekenHuidigeVolume(GlobaleOphaalPatronen);
             if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
                 volume = true;
-            
 
             double incrementeleKosten = 0;
             if (ophaalpatroon.Index(index).previous != null || ophaalpatroon.Index(index).next != null)
