@@ -8,7 +8,7 @@ namespace Grote_Opdracht
         
         public static List<DoubleLinkedList> ShiftAndereDag(List<DoubleLinkedList> huidigeOphaalpatronen) //Om een bedrijf van de ene dag naar de andere te verplaatsen
         {
-            incrementeel = 0;
+            incrementeel = 0; // Dit gaan we gebruiken om incrementeel huidigeKost te berekenen.
             GlobaleOphaalPatronen = huidigeOphaalpatronen; //clonen, uiteindelijk iets anders voor bedenken
 
             int tries = 0;
