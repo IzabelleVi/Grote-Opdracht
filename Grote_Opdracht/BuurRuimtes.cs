@@ -6,63 +6,508 @@ namespace Grote_Opdracht
         public static Random random = new Random();
         static List<DoubleLinkedList> GlobaleOphaalPatronen;
         
-        public static List<DoubleLinkedList> ShiftAndereDag(List<DoubleLinkedList> huidigeOphaalpatronen) //Om een bedrijf van de ene dag naar de andere te verplaatsen
+        public static List<DoubleLinkedList> ShiftAndereDag(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
-            incrementeel = 0; // Dit gaan we gebruiken om incrementeel huidigeKost te berekenen.
-            GlobaleOphaalPatronen = huidigeOphaalpatronen; //clonen, uiteindelijk iets anders voor bedenken
-
+            incrementeel = 0;
             int tries = 0;
             while (tries < 10) // 10 keer random bedrijf pakken en dan honderd keer kijken of die past
             {
-                int Dag1 = random.Next(0, huidigeOphaalpatronen.Count); // kies een random rit
-                DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)]; // kies een random ophaalpatroon
+                int Ritnummer;
+                DoubleLinkedList ophaalPatroon = DoubleLinkedList.KiesRandomOphaalPatroon(huidigeOphaalpatronen, out Ritnummer); // Kies een random ophaalpatroon om een bedrijf uit te wisselen
                 int index;
                 try
                 {
-                    index = random.Next(1, ophaalPatroon.Count) - 1; // kies een random bedrijf
-                    if (index == 0 || index == ophaalPatroon.Count - 1) 
-                    {
-                        tries++;
-                        continue;
-                    }
+                    index = random.Next(1, ophaalPatroon.Count -2); // Kies een random bedrijf in het ophaalpatroon die niet de stortplaats zijn
                 }
                 catch
                 {
-                    continue; // voor als er geen bedrijven zijn
+                    continue;
                 }
-                Node verplaatsbareNode = ophaalPatroon.Index(index); // de node die we gaan verplaatsen
-                if (verplaatsbareNode == null) continue; // Check of de node wel iets is
+                Node verplaatsbareNode = ophaalPatroon.Index(index);
                 Bedrijf verplaatsbaarBedrijf = verplaatsbareNode.data;
-                if (verplaatsbaarBedrijf.Plaats == "Stortplaats") continue; // overslaan als het de stortplaats is
-
-                int tries2 = 0;
-                while (tries2 < 100) // honderd keer proberen te verplaatsen
+                if (verplaatsbaarBedrijf == BeginOplossing.stortPlaats)
                 {
-                    DoubleLinkedList nieuweOphaalPatroon = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)]; // Kies het nieuwe ophaalpatroon waar je hem naar verplaatst
-                    int nieuwePlek;
-                    try
-                    {
-                        nieuwePlek = random.Next(1, nieuweOphaalPatroon.Count) - 1;  // Kies de plek waar je hem neerzet
-                    }
-                    catch
-                    {
-                        break; // voor als er geen bedrijven zijn
-                    }
-                    if (insertChecker(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek)) // Check of het mogelijk is
-                    {
-                        BaseVerwijderen(ophaalPatroon, verplaatsbareNode); // Verwijder het bedrijf uit het oude ophaalpatroon
-                        BaseToevoegen(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek); // Voeg het bedrijf toe aan het nieuwe ophaalpatroon
-                        Program.huidigeKost += incrementeel;
-                        return huidigeOphaalpatronen;
-                    }
-                    tries2++;
+                    tries++;
+                    continue;
                 }
-                tries++;
-            }
 
+                // Kies een random ophaalpatroon om het bedrijf in te plaatsen, dat binnen de juiste dagen past
+                switch (verplaatsbaarBedrijf.Frequentie)
+                {
+                case 1:
+                    for(int i = 0; i < 100; i++) // 100 keer proberen te plaatsen in nieuw ophaalpatroon
+                    {
+                        DoubleLinkedList rit = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)];
+                        if (rit == ophaalPatroon){continue;}
+
+                        int index2;
+                        try
+                        {
+                            index2 = random.Next(1, rit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                        }
+                        catch
+                        {
+                            break;
+                        }
+                        if (insertChecker(rit, verplaatsbaarBedrijf, index2))
+                        {
+                            BaseToevoegen(rit, verplaatsbaarBedrijf, index2);
+                            BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                            Program.huidigeKost += incrementeel;
+                            //Console.WriteLine("Add(1) is gelukt");
+                            return huidigeOphaalpatronen;
+                        }
+                    }
+                    break;
+                case 2:
+                    //for (int tries2 = 0; tries2 < 100; tries2++) // 100 keren proberen te plaatsen in nieuw ophaalpatroon
+                    //ma-do (0,1 ; 6,7) of di-vr (2,3 ; 8,9)
+                    if (Ritnummer == 0 || Ritnummer == 1 || Ritnummer == 6 || Ritnummer == 7) // Zit nu in maandag & donderdag, proberen te zetten in  dinsdag & vrijdag
+                    {
+                        int temp = random.Next(2, 4) ;
+                        DoubleLinkedList eersteRit = huidigeOphaalpatronen[temp]; // Kies een random bus op dinsdag
+                        temp = random.Next(2, 4) ;
+                        DoubleLinkedList tweedeRit = huidigeOphaalpatronen[temp + 6]; // Kies een random bus op vrijdag
+                        for (int tries2 = 0; tries2 < 100; tries2++) // 100 keren proberen te plaatsen in nieuw ophaalpatroon
+                        {
+                            int indexEersteRit;
+                            int indexTweedeRit;
+                            try
+                            {
+                                indexEersteRit = random.Next(1, eersteRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexTweedeRit = random.Next(1, tweedeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                            }
+                            catch
+                            {
+                            break;
+                            }
+
+                            if (insertChecker(eersteRit, verplaatsbaarBedrijf, indexEersteRit) && insertChecker(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit))
+                            {
+                                // Als mogelijk, voeg toe aan nieuwe ophaalpatroon & verwijder uit het oude
+                                BaseToevoegen(eersteRit, verplaatsbaarBedrijf, indexEersteRit);
+                                BaseToevoegen(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit);
+                                if(Ritnummer == 0 || Ritnummer == 1) // Patroon is maandag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                }
+                                else // Patroon is donderdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee maandag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[0], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[1], verplaatsbareNode);
+                                    }
+                                }
+                                Program.huidigeKost += incrementeel;
+                                //Console.WriteLine("Add(2) is gelukt");
+                                return huidigeOphaalpatronen;
+                            }
+                        }
+                    }
+                    if (Ritnummer == 2 || Ritnummer == 3 || Ritnummer == 8 || Ritnummer == 9) // Zit nu in dinsdag & vrijdag, proberen te zetten in maandag & donderdag
+                    {
+                        int temp = random.Next(0, 2) ;
+                        DoubleLinkedList eersteRit = huidigeOphaalpatronen[temp]; // Kies een random bus op maandag
+                        temp = random.Next(0, 2) ;
+                        DoubleLinkedList tweedeRit = huidigeOphaalpatronen[temp + 6]; // Kies een random bus op donderdag
+                        for (int tries2 = 0; tries2 < 100; tries2++) // 100 keren proberen te plaatsen in nieuw ophaalpatroon
+                        {
+                            int indexEersteRit;
+                            int indexTweedeRit;
+                            try
+                            {
+                                indexEersteRit = random.Next(1, eersteRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexTweedeRit = random.Next(1, tweedeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                            }
+                            catch
+                            {
+                            break;
+                            }
+
+                            if (insertChecker(eersteRit, verplaatsbaarBedrijf, indexEersteRit) && insertChecker(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit))
+                            {
+                                BaseToevoegen(eersteRit, verplaatsbaarBedrijf, indexEersteRit);
+                                BaseToevoegen(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit);
+                                if(Ritnummer == 2 || Ritnummer == 3) // Patroon is dinsdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee vrijdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[8], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[9], verplaatsbareNode);
+                                    }
+                                }
+                                else // Patroon is vrijdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+                                }
+                                Program.huidigeKost += incrementeel;
+                                //Console.WriteLine("Add(2) is gelukt");
+                                return huidigeOphaalpatronen;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Bedrijf wordt op de verkeerde dag opgehaald");
+                    }
+                    break;
+                case 3: // Kan niet naar andere dag verplaats worden, dagen zijn vast
+                    break;
+                case 4: 
+                // Maandag, Dinsdag, Woensdag, Donderdag (0,1 ; 2,3 ; 4,5 ; 6,7) of Dinsdag, Woensdag, Donderdag, Vrijdag (2,3 ; 4,5 ; 6,7 ; 8,9)
+                    if (Ritnummer == 0 || Ritnummer == 1 || Ritnummer == 2 || Ritnummer == 3 || Ritnummer == 4 || Ritnummer == 5 || Ritnummer == 6 || Ritnummer == 7) // Zit nu in maandag, dinsdag, woensdag of donderdag, proberen te zetten in dinsdag, woensdag, donderdag of vrijdag
+                    {
+                        int temp = random.Next(2, 4) ;
+                        DoubleLinkedList eersteRit = huidigeOphaalpatronen[temp]; // Kies een random bus op dinsdag
+                        temp = random.Next(2, 4) ;
+                        DoubleLinkedList tweedeRit = huidigeOphaalpatronen[temp + 2]; // Kies een random bus op woensdag
+                        temp = random.Next(2, 4) ;
+                        DoubleLinkedList derdeRit = huidigeOphaalpatronen[temp + 4]; // Kies een random bus op donderdag
+                        temp = random.Next(2, 4) ;
+                        DoubleLinkedList vierdeRit = huidigeOphaalpatronen[temp + 6]; // Kies een random bus op vrijdag
+                        for (int tries2 = 0; tries2 < 100; tries2++) // 100 keren proberen te plaatsen in nieuw ophaalpatroon
+                        {
+                            int indexEersteRit;
+                            int indexTweedeRit;
+                            int indexDerdeRit;
+                            int indexVierdeRit;
+                            try
+                            {
+                                indexEersteRit = random.Next(1, eersteRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexTweedeRit = random.Next(1, tweedeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexDerdeRit = random.Next(1, derdeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexVierdeRit = random.Next(1, vierdeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                            }
+                            catch
+                            {
+                                break;
+                            }
+
+                            if (insertChecker(eersteRit, verplaatsbaarBedrijf, indexEersteRit) && insertChecker(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit) && insertChecker(derdeRit, verplaatsbaarBedrijf, indexDerdeRit) && insertChecker(vierdeRit, verplaatsbaarBedrijf, indexVierdeRit))
+                            {
+                                BaseToevoegen(eersteRit, verplaatsbaarBedrijf, indexEersteRit);
+                                BaseToevoegen(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit);
+                                BaseToevoegen(derdeRit, verplaatsbaarBedrijf, indexDerdeRit);
+                                BaseToevoegen(vierdeRit, verplaatsbaarBedrijf, indexVierdeRit);
+                                if(Ritnummer == 0 || Ritnummer == 1) // Patroon is maandag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                }
+                                else if(Ritnummer == 2 || Ritnummer == 3) // Patroon is dinsdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee maandag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[0], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[1], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                }
+                                else if(Ritnummer == 4 || Ritnummer == 5) // Patroon is woensdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee maandag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[0], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[1], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                }
+                                else // Patroon is donderdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee maandag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[0], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[1], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+                                }
+                                Program.huidigeKost += incrementeel;
+                                //Console.WriteLine("Add(4) is gelukt");
+                                return huidigeOphaalpatronen;
+                            }
+                        }
+                    }
+                    else if (Ritnummer == 2 || Ritnummer == 3 || Ritnummer == 4 || Ritnummer == 5 || Ritnummer == 6 || Ritnummer == 7 || Ritnummer == 8 || Ritnummer == 9) // Patroon is dinsdag, woensdag, donderdag, vrijdag
+                    {
+                        int temp = random.Next(0, 2) ;
+                        DoubleLinkedList eersteRit = huidigeOphaalpatronen[temp]; // Kies een random bus op maandag
+                        temp = random.Next(0, 2) ;
+                        DoubleLinkedList tweedeRit = huidigeOphaalpatronen[temp + 2]; // Kies een random bus op dinsdag
+                        temp = random.Next(0, 2) ;
+                        DoubleLinkedList derdeRit = huidigeOphaalpatronen[temp + 4]; // Kies een random bus op woensdag
+                        temp = random.Next(0, 2) ;
+                        DoubleLinkedList vierdeRit = huidigeOphaalpatronen[temp + 6]; // Kies een random bus op donderdag
+                        for (int tries2 = 0; tries2 < 100; tries2++) // 100 keren proberen te plaatsen in nieuw ophaalpatroon
+                        {
+                            int indexEersteRit;
+                            int indexTweedeRit;
+                            int indexDerdeRit;
+                            int indexVierdeRit;
+                            try
+                            {
+                                indexEersteRit = random.Next(1, eersteRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexTweedeRit = random.Next(1, tweedeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexDerdeRit = random.Next(1, derdeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                                indexVierdeRit = random.Next(1, vierdeRit.Count -2); //Zoek nieuwe plek die niet de eerste of laatste is
+                            }
+                            catch
+                            {
+                            break;
+                            }
+
+                            if (insertChecker(eersteRit, verplaatsbaarBedrijf, indexEersteRit) && insertChecker(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit) && insertChecker(derdeRit, verplaatsbaarBedrijf, indexDerdeRit) && insertChecker(vierdeRit, verplaatsbaarBedrijf, indexVierdeRit))
+                            {
+                                BaseToevoegen(eersteRit, verplaatsbaarBedrijf, indexEersteRit);
+                                BaseToevoegen(tweedeRit, verplaatsbaarBedrijf, indexTweedeRit);
+                                BaseToevoegen(derdeRit, verplaatsbaarBedrijf, indexDerdeRit);
+                                BaseToevoegen(vierdeRit, verplaatsbaarBedrijf, indexVierdeRit);
+                                
+                                if(Ritnummer == 2 || Ritnummer == 3) // Patroon is dinsdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee vrijdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[8], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[9], verplaatsbareNode);
+                                    }
+                                }
+                                else if(Ritnummer == 4 || Ritnummer == 5) // Patroon is woensdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                    try // Probeer uit een van de twee vrijdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[8], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[9], verplaatsbareNode);
+                                    }
+                                }
+                                else if (Ritnummer == 6 || Ritnummer == 7)// Patroon is donderdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+                                    try // Probeer uit een van de twee vrijdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[8], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[9], verplaatsbareNode);
+                                    }
+                                }
+                                else // Patroon is vrijdag
+                                {
+                                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                                    try // Probeer uit een van de twee dinsdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[2], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[3], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee woensdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[4], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[5], verplaatsbareNode);
+                                    }
+
+                                    try // Probeer uit een van de twee donderdag bussen te verwijderen
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[6], verplaatsbareNode);
+                                    }
+                                    catch
+                                    {
+                                        BaseVerwijderen(huidigeOphaalpatronen[7], verplaatsbareNode);
+                                    }
+                                }
+                                Program.huidigeKost += incrementeel;
+                                //Console.WriteLine("Add(4) is gelukt");
+                                return huidigeOphaalpatronen;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Bedrijf wordt op de verkeerde dag opgehaald");
+                    }
+                    break;
+                }
+            }
+            //Console.WriteLine("Shift andere dag is niet gelukt");
             return huidigeOphaalpatronen;
         }
-
         public static List<DoubleLinkedList> ShiftAndereTruck(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
