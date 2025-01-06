@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Grote_Opdracht
 {
 
-    class Node
+    class Node //Dit verwijst naar een bedrijf binnen onze doublelinked list
     {
         public Bedrijf data;
         public Node next;
@@ -20,7 +14,7 @@ namespace Grote_Opdracht
             previous = null;
         }
     }
-    class DoubleLinkedList
+    class DoubleLinkedList // Dit is de doublelinked list
     {
         public Node head;
         public Node tail;
@@ -33,12 +27,12 @@ namespace Grote_Opdracht
             count = 0;
         }
 
-        public int Count
+        public int Count //Hoeveelheid items in de list
         {
             get { return count; }
         }
 
-        public void AddFirst(Node node)
+        public void AddFirst(Node node) // Voeg een nieuw items vooraan toe
         {
             if (head == null)
             {
@@ -55,7 +49,7 @@ namespace Grote_Opdracht
             }
         }
 
-        public void AddLast(Node node)
+        public void AddLast(Node node) // Voeg een item achteraan toe
         {
             if (head == null)
             {
@@ -72,7 +66,7 @@ namespace Grote_Opdracht
             }
         }
 
-        public void RemoveFirst()
+        public void RemoveFirst() // Verwijder het eerste item
         {
             if (head == null)
             {
@@ -86,7 +80,8 @@ namespace Grote_Opdracht
             }
         }
 
-        public void RemoveLast()
+
+        public void RemoveLast() // Verwijder het laatste item
         {
             if (head == null)
             {
@@ -100,7 +95,7 @@ namespace Grote_Opdracht
             }
         }
 
-        public void Remove(Node node)
+        public void Remove(Node node) // Verwijder een gespecificeerde node (dit kost O(n) tijd)
         {
             if (head == null)
             {
@@ -125,24 +120,24 @@ namespace Grote_Opdracht
             }
         }
 
-        public void Clear()
+        public void Clear() // De list leeg maken
         {
             head = null;
             tail = null;
             count = 0;
         }
 
-        public void Print()
+        public void Print() // Print de hele list
         {
             Node current = head;
             while (current != null)
             {
-                Console.WriteLine(current.data);
+                Console.WriteLine(current.data.Order);
                 current = current.next;
             }
         }
 
-        public Node Find(Bedrijf data)
+        public Node Find(Bedrijf data) // Zoek een bedrijf binnen de lijst. Kost O(n) tijd
         {
             Node current = head;
             while (current != null)
@@ -156,7 +151,7 @@ namespace Grote_Opdracht
         return null;
         }
 
-        public Node Index(int index)
+        public Node Index(int index) //returned het bedrijf dat op de gegeven index in de lijst zit. Kost O(n) tijd.
         {
             int i = 0;
             Node current = head;
@@ -172,45 +167,14 @@ namespace Grote_Opdracht
             return null;
         }
 
-        public void Insert(int index, Node node)
-        {
-            int i = 0;
-            Node current = head;
-            if (index == 0)
-            {
-                AddFirst(node);
-            }
-            else if (index == count)
-            {
-                AddLast(node);
-            }
-            else
-            {
-                while (current != null)
-                {
-                    if (i == index)
-                    {
-                        node.next = current;
-                        node.previous = current.previous;
-                        current.previous.next = node;
-                        current.previous = node;
-                        count++;
-                        break;
-                    }
-                    current = current.next;
-                    i++;
-                }
-            }
-            
-        }
 
-        public void VerplaatsBedrijf(Node node, int index)
+        public void VerplaatsBedrijf(Node node, int index) // Verwijderd en herplaatst het bedrijf in een gegeven index. Kost O(n) tijd.
         {
             Remove(node);
-            Insert(index, node);
+            InsertAtIndex(node, index);
         }
         
-        public void FindAndReplace(Bedrijf data, Bedrijf newData)
+        public void FindAndReplace(Bedrijf data, Bedrijf newData) // Verwijderd een bedrijf en zet op die plek in de index een nieuw, gegeven bedrijf.
         {
             Node current = head;
             while (current != null)
@@ -224,54 +188,74 @@ namespace Grote_Opdracht
             }
         }
 
-        public void WisselBedrijven(Node node1, Node node2)
+        public void WisselBedrijven(Node node1, Node node2) // Wissel 2 gegeven bedrijven binnen de list.
         {
-            Bedrijf temp = node1.data;
-            node1.data = node2.data;
-            node2.data = temp;
+            if (node1 == node2) return; // Geen actie nodig als het dezelfde node is
+
+            // Houd referenties bij voor omliggende nodes
+            Node prev1 = node1.previous;
+            Node next1 = node1.next;
+            Node prev2 = node2.previous;
+            Node next2 = node2.next;
+
+            // Update de omliggende nodes van node1
+            if (prev1 != null) prev1.next = node2;
+            if (next1 != null) next1.previous = node2;
+
+            // Update de omliggende nodes van node2
+            if (prev2 != null) prev2.next = node1;
+            if (next2 != null) next2.previous = node1;
+
+            // Wissel de previous en next van node1 en node2
+            node1.previous = prev2;
+            node1.next = next2;
+            node2.previous = prev1;
+            node2.next = next1;
+
+            // Update head en tail indien nodig
+            if (node1 == head) head = node2;
+            else if (node2 == head) head = node1;
+
+            if (node1 == tail) tail = node2;
+            else if (node2 == tail) tail = node1;
         }
 
-        public void AddList(DoubleLinkedList extraRit)
-        {
-            Node node = extraRit.head;
-            while(node != extraRit.tail)
-            {
-                AddLast(node);
-                node = node.next;
-                count++;
-            }
-            AddLast(node);
-            count++;
-        }
 
-        public void InsertAtIndex(Node newNode, int index)
+        public void InsertAtIndex(Node node, int index) //Voegt bedrijf toe in gegeven index. Kost O(n/2)
         {
-            if (index == 0)
-            {
-                AddFirst(newNode);
-            }
-            else if (index == Count)
-            {
-                AddLast(newNode);
-            }
+            if (index < 0 || index > count) throw new ArgumentOutOfRangeException();
+
+            if (index == 0) AddFirst(node);
+            else if (index == count) AddLast(node);
             else
             {
-                // Voeg toe in het midden van de lijst
-                Node current = head;
-                for (int i = 0; i < index - 1; i++)
-                    current = current.next;
+                Node current;
+                if (index < count / 2)
+                {
+                    current = head;
+                    for (int i = 0; i < index - 1; i++)
+                        current = current.next;
+                }
+                else
+                {
+                    current = tail;
+                    for (int i = count - 1; i > index; i--)
+                        current = current.previous;
+                }
 
-                newNode.next = current.next;
-                newNode.previous = current;
+                node.next = current.next;
+                node.previous = current;
 
-                current.next.previous = newNode;
-                current.next = newNode;
+                current.next.previous = node;
+                current.next = node;
                 count++;
             }
         }
 
-        public void RemoveAtIndex(int index)
+        public void RemoveAtIndex(int index) // Verwijderd bedrijf van gegeven Index 
         {
+            if (index < 0 || index >= count) throw new ArgumentOutOfRangeException();
+
             if (index == 0)
             {
                 RemoveFirst();
@@ -286,29 +270,24 @@ namespace Grote_Opdracht
                 for (int i = 0; i < index; i++)
                     current = current.next;
 
-                current.previous.next = current.next;
-                current.next.previous = current.previous;
+                if (current.previous != null)
+                {
+                    current.previous.next = current.next;
+                }
+                if (current.next != null)
+                {
+                    current.next.previous = current.previous;
+                }
                 count--;
             }
         }
-        public static DoubleLinkedList KiesRandomOphaalPatroon(List<DoubleLinkedList> huidigeOphaalpatronen, out int index)
-        {
-            Random random = new Random();
-            if (huidigeOphaalpatronen == null || huidigeOphaalpatronen.Count == 0)
-            {
-                throw new ArgumentException("De lijst met ophaalpatronen mag niet leeg zijn.");
-            }
-
-            index = random.Next(0, huidigeOphaalpatronen.Count);
-            return huidigeOphaalpatronen[index];
-        }
-
-        public bool Contains(Node node)
+        
+        public bool Contains(Bedrijf data) // Check of een bedrijf in de list zit. Kost O(n) tijd.
         {
             Node current = head;
             while (current != null)
             {
-                if (current == node)
+                if (current.data == data)
                 {
                     return true;
                 }
@@ -316,22 +295,6 @@ namespace Grote_Opdracht
             }
             return false;
         }
-        public int IndexOf(Bedrijf bedrijf)
-        {
-            Node current = head;
-            int index = 0;
-            while (current != null)
-            {
-                if (current.data.Equals(bedrijf))
-                {
-                    return index;
-                }
-                current = current.next;
-                index++;
-            }
-            return -1; // Bedrijf not found
-        }
     }
             
 }
-
