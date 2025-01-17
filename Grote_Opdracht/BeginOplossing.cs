@@ -1,6 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+/*  To Do
+- Ilan:
+    - Hoeveelheid Trips aanpassen waar nodig
+    - Op veel plekken wordt rekening gehouden met de disposal site, dat hoeft dus ook niet meer
+- Iza:
+    - Gelijk de tijd en volumes uitrekenen.
+*/
+
 
 namespace Grote_Opdracht
 {
@@ -20,7 +25,7 @@ namespace Grote_Opdracht
         public static List<DoubleLinkedList> WillekeurigeBeginOplossing()
         {
             // Initialize 10 routes (2 trucks per day for 5 days).
-            List<DoubleLinkedList> routes = Enumerable.Range(0, 10).Select(_ => new DoubleLinkedList()).ToList();
+            List<DoubleLinkedList> routes = Enumerable.Range(0, 10).Select(_ => new DoubleLinkedList()).ToList(); // Ilan; dit moet aangepast worden voor trips
 
             Random random = new Random();
 
@@ -41,7 +46,7 @@ namespace Grote_Opdracht
                     // Assign days based on frequency.
                     List<int> days = GetValidDaysForFrequency(bedrijf.Frequentie, random);
 
-                    foreach (int day in days) {
+                    foreach (int day in days) { // Ilan; dit moet aangepast worden voor trips
                         int truckIndex = day * 2 + random.Next(0, 2); // Choose one of two trucks for the day.
                         TryAssign(truckIndex, bedrijf, false);
                     }
@@ -50,7 +55,7 @@ namespace Grote_Opdracht
 
             // Ensure all routes start and end at the disposal site.
             foreach (DoubleLinkedList route in routes) {
-                AddDisposalSiteToRoute(route);
+                AddDisposalSiteToRoute(route); // Ilan; disposal maakt niet meer uit
             }
 
             return routes;
@@ -60,8 +65,7 @@ namespace Grote_Opdracht
                 if (AssignToRoute(routes[truckIndex], bedrijf, remainingVisits)) return;
 
                 if (AssignToRoute(routes[truckIndex], stortPlaats, null)) {
-                    AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); // Dispose of garbage at stortplaats and try again
-                } 
+                    AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); }// Ilan: Disposal wordt niet meer gebruikt
                 else if (retry) return;
                 else {
                     int differentDayTruck; // Get the difference in number of the other truck, 1 or -1
@@ -69,11 +73,11 @@ namespace Grote_Opdracht
                     else differentDayTruck = -1;
                     TryAssign(truckIndex + differentDayTruck, bedrijf, true);
                 }
-                
+                // Iza, tijd en capaciteit berekenen
             }
         }
 
-        private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits)
+        private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits) // Ilan, wederom de trips & disposal die niet meer hoeft
         {
             double currentVolume = 0;
             double currentTime = 0;
@@ -109,7 +113,7 @@ namespace Grote_Opdracht
             return false;
         }
 
-        private static void AddDisposalSiteToRoute(DoubleLinkedList route)
+        private static void AddDisposalSiteToRoute(DoubleLinkedList route) // Ilan, mag weg
         {
             if (route.head == null) {
                 route.AddFirst(new Node(stortPlaats));
@@ -120,7 +124,7 @@ namespace Grote_Opdracht
             }
         }
 
-        private static List<int> GetValidDaysForFrequency(int frequency, Random random)
+        private static List<int> GetValidDaysForFrequency(int frequency, Random random) // Ilan, trips
         {
             return frequency switch {
                 1 => new List<int> { random.Next(0, 5) }, // Any one day.
