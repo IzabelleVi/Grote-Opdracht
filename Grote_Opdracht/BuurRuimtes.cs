@@ -557,10 +557,24 @@ namespace Grote_Opdracht
 
             if (totaleTijd < 570 * 60)
                 tijd = true;
+            else if (570*60 < totaleTijd && totaleTijd < 630 * 60)
+            {
+                tijd = true;
+                double penalty = (630 * 60 - totaleTijd) * 2; //Hier extra tijd *2 gedaan, kan nog nader worden bepaald
+                incrementeel += penalty;
+            }
+                
 
             Program.BerekenHuidigeVolume(GlobaleOphaalPatronen);
-            if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
+            double volumeTotaal = (bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)];
+            if (volumeTotaal < 20000)
                 volume = true;
+            else if (volumeTotaal > 20000 && volumeTotaal < 21000)
+            {
+                volume = true;
+                double penalty = (21000 - volumeTotaal) * 2; //Hier extra volume *2 gedaan, kan nog nader worden bepaald
+                incrementeel += penalty;
+            }
 
             double incrementeleKosten = 0; // Iza, zorgen dat dit allemaal werkt met de nieuwe kosten bijhouden
             if (ophaalpatroon.Index(index).previous != null || ophaalpatroon.Index(index).next != null)

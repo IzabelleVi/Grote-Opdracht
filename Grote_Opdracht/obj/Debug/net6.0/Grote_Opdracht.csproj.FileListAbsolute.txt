@@ -43,3 +43,18 @@ C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\
 C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.pdb
 C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.genruntimeconfig.cache
 C:\Users\lenna\Documents\School\jaar 2\INFOOPT\grootste-opdracht\Grote_Opdracht\obj\Debug\net6.0\ref\Grote_Opdracht.dll
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfoInputs.cache
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.AssemblyInfo.cs
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.csproj.CoreCompileInputs.cache
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.sourcelink.json
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\refint\Grote_Opdracht.dll
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.exe
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.deps.json
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.runtimeconfig.json
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.dll
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\bin\Debug\net6.0\Grote_Opdracht.pdb
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\Grote_Opdracht.genruntimeconfig.cache
+C:\Users\goofv\OneDrive\Documenten\GitHub\Grote-Opdracht\Grote_Opdracht\obj\Debug\net6.0\ref\Grote_Opdracht.dll

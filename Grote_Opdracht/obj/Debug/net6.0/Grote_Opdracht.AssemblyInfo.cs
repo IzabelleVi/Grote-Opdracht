@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Grote_Opdracht")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fce6d2db371bd33ee309b8cf18ae186b8abc2ffc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+812796620be79c6a6502556ebc2f5eba87df4565")]
 [assembly: System.Reflection.AssemblyProductAttribute("Grote_Opdracht")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Grote_Opdracht")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
