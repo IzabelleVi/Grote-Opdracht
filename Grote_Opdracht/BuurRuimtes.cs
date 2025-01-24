@@ -11,6 +11,8 @@
       verwijderen en in de nieuwe set toevoegen.
 */
 
+using System.Formats.Asn1;
+
 namespace Grote_Opdracht
 {
     internal class BuurRuimtes
@@ -23,25 +25,19 @@ namespace Grote_Opdracht
         {
             incrementeel = 0;
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
-            int Dag1 = random.Next(0, huidigeOphaalpatronen.Count);
-            DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[Dag1];
+            int Dag1 = random.Next(0, huidigeOphaalpatronen.Count); // index oude patroon
+            DoubleLinkedList ophaalPatroon = huidigeOphaalpatronen[Dag1]; // oude patroon
             int index;
-            try
-            {
-                index = random.Next(1, ophaalPatroon.Count) - 1;
-                if (index == 0 || index == ophaalPatroon.Count - 1)
+            index = random.Next(1, ophaalPatroon.Count) - 1; // index bedrijf in oude patroon
+            if (index == 0 || index == ophaalPatroon.Count - 1) // Kan weg als stortplaats niet in de lijst staat.
                 {
                     return huidigeOphaalpatronen;
                 }
-            }
-            catch
-            {
-                return huidigeOphaalpatronen;
-            }
+
             Node verplaatsbareNode = ophaalPatroon.Index(index);
             if (verplaatsbareNode == null) return huidigeOphaalpatronen;
             Bedrijf verplaatsbaarBedrijf = verplaatsbareNode.data;
-            if (verplaatsbaarBedrijf.Plaats == "Stortplaats") return huidigeOphaalpatronen;
+            if (verplaatsbaarBedrijf.Plaats == "Stortplaats") return huidigeOphaalpatronen; // Kan weg als stortplaats niet in de lijst staat.
 
             int frequentie = verplaatsbaarBedrijf.Frequentie;
             if (frequentie == 3) return huidigeOphaalpatronen;
@@ -51,21 +47,24 @@ namespace Grote_Opdracht
             {
                 if (Array.Exists(set, element => element == Dag1))
                 {
-                    int nieuweDag1 = set[random.Next(0, set.Length)];
+                    int nieuweDag1 = set[random.Next(0, set.Length)]; // index nieuw ophaalpatroon
                     if (nieuweDag1 == Dag1) return huidigeOphaalpatronen; // Ensure we pick a different day within the set
 
-                    DoubleLinkedList nieuweOphaalPatroon1 = huidigeOphaalpatronen[nieuweDag1];
+                    DoubleLinkedList nieuweOphaalPatroon1 = huidigeOphaalpatronen[nieuweDag1]; // nieuw ophaalpatroon
                     int nieuwePlek1;
-                    try
+                    nieuwePlek1 = random.Next(1, nieuweOphaalPatroon1.Count) - 1;
+
+                    if (frequentie == 1)
                     {
-                        nieuwePlek1 = random.Next(1, nieuweOphaalPatroon1.Count) - 1;
-                    }
-                    catch
-                    {
+                        BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
+                        BaseToevoegen(nieuweOphaalPatroon1, verplaatsbaarBedrijf, nieuwePlek1);
+                        Program.Rijtijden[nieuweDag1] += incrementeel; // Iza
+                        Program.Volumes[nieuweDag1] += verplaatsbaarBedrijf.AantContainers * verplaatsbaarBedrijf.VolumePerContainer; // Iza
+                        Program.Rijtijden[Dag1] -= incrementeel; // Iza
+                        Program.Volumes[Dag1] -= verplaatsbaarBedrijf.AantContainers * verplaatsbaarBedrijf.VolumePerContainer; // Iza
                         return huidigeOphaalpatronen;
                     }
-
-                    if (frequentie == 4)
+                    else if (frequentie == 4)
                     {
                         int nieuweDag2 = set[random.Next(0, set.Length)];
                         if (nieuweDag2 == Dag1 || nieuweDag2 == nieuweDag1) return huidigeOphaalpatronen; // Ensure we pick a different day within the set
@@ -149,16 +148,6 @@ namespace Grote_Opdracht
                             return huidigeOphaalpatronen;
                         }
                     }
-                    else if (frequentie == 1)
-                    {
-                        if (insertChecker(nieuweOphaalPatroon1, verplaatsbaarBedrijf, nieuwePlek1))
-                        {
-                            BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
-                            BaseToevoegen(nieuweOphaalPatroon1, verplaatsbaarBedrijf, nieuwePlek1);
-                            Program.huidigeKost += incrementeel; // Iza
-                            return huidigeOphaalpatronen;
-                        }
-                    }
                 }
             }
             return huidigeOphaalpatronen;
@@ -170,7 +159,7 @@ namespace Grote_Opdracht
             switch (frequentie)
             {
                 case 1:
-                    sets.Add(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 });
+                    sets.Add(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }); // Every day
                     break;
                 case 2:
                     sets.Add(new int[] { 0, 1, 2 });
@@ -249,7 +238,6 @@ namespace Grote_Opdracht
             }
             return huidigeOphaalpatronen;
         }
-
 
         // Verschuift een bedrijf naar een andere plek binnen hetzelfde ophaalpatroon.
         public static List<DoubleLinkedList> ShiftZelfdeDag(List<DoubleLinkedList> huidigeOphaalpatronen) // Ilan, zorgen dat dit overeenkomt met de trips.
@@ -383,7 +371,6 @@ namespace Grote_Opdracht
                 return false;
             }
 
-
         private static int GetRandomIndex(DoubleLinkedList rit)
         {
             if (rit == null || rit.Count == 0) return -1;
@@ -511,7 +498,7 @@ namespace Grote_Opdracht
             Bedrijf vorigeBedrijf = nodeVorigeBedrijf.data;
             //MMMMMMMMMMMMMMKWEDSRFGHNMV<KJHYGTERFEDAFSGHJKVGCRFEWDQWSFZGRDXHCJVKGCXDZRFSEDWSEDFSZRGDXHFCJGVHCFGDFRSEDAWRFZSGTXDHCFJVGCHGTRFED
             //Console.WriteLine($"Patroon nummer: {GlobaleOphaalPatronen.IndexOf(ophaalpatroon)}, Hoeveelheid rij tijden: {Program.Rijtijd.Count}");
-            double huidigeRijtijd = Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)];
+            double huidigeRijtijd = Program.Rijtijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)];
         
             double tijdTussenVorigeEnVolgende = Program.TijdTussenBedrijven(vorigeBedrijf, nodeVorigeBedrijf.next.data);
             double tijdTussenVorigeEnNieuwe = Program.TijdTussenBedrijven(vorigeBedrijf, bedrijf);
@@ -522,24 +509,10 @@ namespace Grote_Opdracht
 
             if (totaleTijd < 570 * 60)
                 tijd = true;
-            else if (570*60 < totaleTijd && totaleTijd < 630 * 60)
-            {
-                tijd = true;
-                double penalty = (630 * 60 - totaleTijd) * 2; //Hier extra tijd *2 gedaan, kan nog nader worden bepaald
-                incrementeel += penalty;
-            }
-                
 
             Program.BerekenHuidigeVolume(GlobaleOphaalPatronen);
-            double volumeTotaal = (bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)];
-            if (volumeTotaal < 20000)
+            if ((bedrijf.VolumePerContainer * bedrijf.AantContainers) + Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] < 20000)
                 volume = true;
-            else if (volumeTotaal > 20000 && volumeTotaal < 21000)
-            {
-                volume = true;
-                double penalty = (21000 - volumeTotaal) * 2; //Hier extra volume *2 gedaan, kan nog nader worden bepaald
-                incrementeel += penalty;
-            }
 
             double incrementeleKosten = 0; // Iza, zorgen dat dit allemaal werkt met de nieuwe kosten bijhouden
             if (ophaalpatroon.Index(index).previous != null || ophaalpatroon.Index(index).next != null)
@@ -595,7 +568,7 @@ namespace Grote_Opdracht
                 }   
 
                 incrementeel += temp; // Iza
-                Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+                Program.Rijtijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
 
                 Program.Volumes[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] -= nodeBedrijf.data.VolumePerContainer * nodeBedrijf.data.AantContainers;
 
@@ -636,7 +609,7 @@ namespace Grote_Opdracht
             }
 
             incrementeel += temp;
-            Program.Rijtijd[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
+            Program.Rijtijden[GlobaleOphaalPatronen.IndexOf(ophaalpatroon)] += temp;
         }
     }
 }
