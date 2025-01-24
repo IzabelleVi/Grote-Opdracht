@@ -1,3 +1,18 @@
+/*  To Do
+- Iza: 
+    - Check_Legit
+- Ilan:
+    - Hoeveelheid Trips aanpassen waar nodig
+    - Temperatuur aanpassen zodat deze elke nieuwe random start hoger wordt
+    - En er voor zorgen dat de temperatuur niet te snel afkoelt, dus bijvoorbeeld maar elke 20 of 50 iteraties afkoelen
+- Goof:
+    - Het toelaten van schendingen van zowel het volume als de tijd beperking
+    - Accepteer oplossing aanpassen zodat er een penalty wordt toegevoegd aan de kost & op basis hiervan wordt geaccepteerd
+- Algemeen:
+    - Zorgen dat de buurruimtes Toevoegen vooral in het begin en in het einde gebruikt worden
+    - Zorgen dat de buurruimtes ShiftAndereDag, ShiftAndereTruck en ShiftZelfdeDag vooral in het midden gebruikt worden & dus niet random
+*/
+
 using Grote_Opdracht;
 
 // Class die wordt gebruikt om een bedrijf te representeren
@@ -26,11 +41,11 @@ class Program //functioneel
 {
     public static List<Bedrijf> bedrijven;
     public static int[,] AfstandenMatrix;
-    static long maxIteraties = 100000000000; // Aantal iteraties voor Simulated Annealing
-    public static List<double> Rijtijd = new List<double>();
-    public static List<double> Volumes = new List<double>();
+    static long maxIteraties = 100000; // Aantal iteraties voor Simulated Annealing
+    public static List<double> Rijtijden = new List<double>(); //Iza
+    public static List<double> Volumes = new List<double>(); // Iza
     static double temperatuur;
-    public static double huidigeKost;
+    public static double huidigeKost; //Iza
     public static double totale_kost;
     public static List<Bedrijf> NietBezochteBedrijven = new List<Bedrijf>();
 
@@ -110,38 +125,37 @@ class Program //functioneel
         List<DoubleLinkedList> allerBesteOphaalpatronen = new List<DoubleLinkedList>();
         int x = 1;
         Random r = new Random();
-        while (x < 100000) // Number of iterations to restart the program with a new initial solution
+        while (x < 1000) // Number of iterations to restart the program with a new initial solution
         {
             // Simulated Annealing parameters
-            double initieleTemperatuur = 100.0;
+            double initieleTemperatuur = 100.0; // Ilan, deze moet bij elke restart van het algoritme verhoogd worden, zodat er meer geexploreerd wordt
             double afkoelingsfactor = 0.95;
             double temperatuur = initieleTemperatuur;
 
             // Reset the NietBezochteBedrijven list, totale rijtijd en het totale volume
             NietBezochteBedrijven = new List<Bedrijf>(bedrijven);
-            Rijtijd.Clear();
-            for (int i = 0; i < 10; i++)
+            Rijtijden.Clear(); 
+            for (int i = 0; i < 15; i++)
             {
-                Rijtijd.Add(0);
+                Rijtijden.Add(0);
             }
-            Volumes.Clear();
-            for (int i = 0; i < 10; i++)
+            Volumes.Clear(); 
+            for (int i = 0; i < 15; i++) 
             {
                 Volumes.Add(0);
             }
-            //Console.WriteLine($"Rijtijden {Rijtijd.Count} en volumes {Volumes.Count} gereset ze hebben ieder (hopelijk) 10 waardes");
 
             // Generate an initial solution
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
-            double huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen);
-            //Console.WriteLine($"Initiele kost: {huidigeKost}");
+            double huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen); // berekent huidige tijd & volume en gebasseerd daarop de kost + penalty
+            Console.WriteLine($"Initiele kost: {huidigeKost}");
 
             int iteratie = 0;
-            while (temperatuur > 1 && iteratie < maxIteraties)
+            while (temperatuur > 1 && iteratie < maxIteraties) // Ilan, hier dus weer zorgen dat de temperatuur niet te snel 1 bereikt, en er voor zorgen dat bij elke nieuwe random start iteratie dit langer duurt.
             {
                 // Generate a neighbor solution
                 List<DoubleLinkedList> buurOphaalpatronen = BuurRuimteBepalen(huidigeOphaalpatronen);
-                double buurKost = BerekenTotaleKost(buurOphaalpatronen);
+                double buurKost = BerekenTotaleKost(buurOphaalpatronen); // Iza, misschien nieuwe functie voor berekenen van buurkost incrementeel
                 //Console.WriteLine($"Buurkost: {buurKost}");
 
                 // Acceptance criteria
@@ -159,7 +173,7 @@ class Program //functioneel
                 }
 
                 // Cool down
-                temperatuur *= afkoelingsfactor;
+                temperatuur *= afkoelingsfactor; // Ilan, dit dus niet elke ronde maar misschien elke 20 iteraties pas doen, zodat er meer geexploreerd wordt
                 iteratie++;
             }
             x++;
@@ -215,41 +229,33 @@ class Program //functioneel
         return null;
     }
 
-    static void ToonResultaten(List<DoubleLinkedList> besteOphaalpatronen, double besteKost) // niet functioneel
+    static void ToonResultaten(List<DoubleLinkedList> besteOphaalpatronen, double besteKost)
     {
         //resultaten moeten in de volgende manier worden weergegeven:
-            // vrachtwagen/dag/nummer op lijst/bedrijf id(stort heeft hier 0); bijv 1/4/13/0 (vrachtwagen 1 gaat op donderdag als 13e adres storten)
+        // vrachtwagen/dag/nummer op lijst/bedrijf id(stort heeft hier 0); bijv 1/4/13/0 (vrachtwagen 1 gaat op donderdag als 13e adres storten)
         //dus dit moet ff worden gefixed
-        int indexer = 0;
-        while(indexer < besteOphaalpatronen.Count)
+        int[] truck1Trips = { 0, 3, 6, 9, 12 }; // Indexes van de trips die door truck 1 worden gereden, rest is truck 2
+
+        for (int tripIndex = 0; tripIndex < besteOphaalpatronen.Count; tripIndex++)
         {
-            int dag = (indexer/2) + 1;
-            int vrachtwagen = (indexer % 2) + 1;
+            int dag = (tripIndex / 3) + 1; // Determine the day based on the trip index
+            int vrachtwagen = truck1Trips.Contains(tripIndex) ? 1 : 2; // Determine the truck based on the trip index
             int adres_nummer = 1;
-            Node node = besteOphaalpatronen[indexer].head;
-            double totaalVolume = 0;
-            while(node != besteOphaalpatronen[indexer].tail)
+            Node node = besteOphaalpatronen[tripIndex].head;
+
+            while (node != besteOphaalpatronen[tripIndex].tail)
             {
-                totaalVolume += node.data.AantContainers * node.data.VolumePerContainer;
-                if(node.data.Order == 0)
-                    totaalVolume = 0;
-                Console.WriteLine($"{vrachtwagen};{dag};{adres_nummer};{node.data.Order}");
+                Console.WriteLine($"{vrachtwagen};{dag};{adres_nummer};{0}"); // Ilan, zorgen dat dit werkt met de nieuwe trips structuur
                 adres_nummer++;
                 node = node.next;
             }
-            indexer++;
+            Console.WriteLine($"{vrachtwagen};{dag};{adres_nummer};0");
         }
-        
-
         Console.WriteLine($"Totale kost: {besteKost}");
-        for (int i = 0; i < 10; i++)
-        {
-            Console.WriteLine($"Rit {i + 1}: {Rijtijd[i]} sec (max = {600*60}"); // Morgen naar kijken
-        }
-        Console.WriteLine($"nog te bezoeken: {NietBezochteBedrijven.Count}");
+        Console.WriteLine($"nog te bezoeken bedrijven: {NietBezochteBedrijven.Count}");
     }
 
-    public static bool AccepteerOplossing(double incrementeel) // functioneel
+    public static bool AccepteerOplossing(double incrementeel) // Goof, hier kun je de tijd en volume schendingen wel accepteren maar er een penalty aan toe voegen.
     {
         // Als de buuroplossing beter is, accepteer deze altijd
         if (incrementeel <= 0)
@@ -270,53 +276,50 @@ class Program //functioneel
         
     }
 
-    static double BerekenTotaleTijd(List<DoubleLinkedList> ophaalpatronen) //functioneel
+    static double BerekenTotaleTijd(List<DoubleLinkedList> ophaalpatronen) // Iza
     {
         double totalenTijd = 0;
-        // de tijd:
+        // Loop door elk patroon
+        int k = 0;
         foreach (var patroon in ophaalpatronen)
         {
-            int k = 0;
             Node bedrijf = patroon.head;
-            //Console.WriteLine(patroon.head.data.Plaats + " dit is bedrijf 1. Bedrijf 2 is: " + bedrijf.next.data.Plaats);
+            // Loop door elk bedrijf in het patroon en bereken de tijd tussen de bedrijven
             for (int i = 0; i < ophaalpatronen.Count-1; i++)
             {
                 if (bedrijf.next != null)
                 {
-                    Rijtijd[k] += TijdTussenBedrijven(bedrijf.data, bedrijf.next.data);
-                    Rijtijd[k] += bedrijf.data.LedigingsDuurMinuten;
+                    Rijtijden[k] += TijdTussenBedrijven(bedrijf.data, bedrijf.next.data);
+                    Rijtijden[k] += bedrijf.data.LedigingsDuurMinuten;
                 }
                 else
                 {
+                    Rijtijden[k] += 30*60; //Toevoegen van sorttijd aan het eind van het patroon
                     break;
                 }
-                if (bedrijf.data.MatrixID == 287)
-                    Rijtijd[k] += 29*60; // 30 minuten storten, min de tijd die al is toegevoegd
                 bedrijf = bedrijf.next;
             }
+            k++;
         }
-        for (int i = 0; i < Rijtijd.Count; i++)
+        for (int i = 0; i < Rijtijden.Count; i++)
         {
-            totalenTijd += Rijtijd[i];
+            totalenTijd += Rijtijden[i];
 
         }
         return totalenTijd;
     }
 
-    public static List<double> BerekenHuidigeVolume(List<DoubleLinkedList> ophaalpatronen) //functioneel, moet nog wel incrementeel worden gemaakt.
+    public static List<double> BerekenHuidigeVolume(List<DoubleLinkedList> ophaalpatronen) // Iza
     {
         int k = 0;
         foreach (var patroon in ophaalpatronen)
         {
-            Node bedrijf = patroon.tail;
+            Node bedrijf = patroon.head;
             double volume = 0;
-            for (int i = ophaalpatronen.Count-1; i > 0; i--)
+            for (int i = 0; i < ophaalpatronen.Count-1; i++)
             {
-                // Als je langs de stortplaats komt, leeg het volume.
-                if (bedrijf.data.MatrixID == 287)
-                    break;
-                volume += (bedrijf.data.AantContainers * bedrijf.data.VolumePerContainer);
-                bedrijf = bedrijf.previous;
+                volume += bedrijf.data.AantContainers * bedrijf.data.VolumePerContainer;
+                bedrijf = bedrijf.next;
             }
             Volumes[k] = volume;
             k++;
@@ -324,17 +327,33 @@ class Program //functioneel
         return Volumes;
     }
 
-    static double BerekenTotaleKost(List<DoubleLinkedList> ophaalpatronen) //functioneel
+    static double BerekenTotaleKost(List<DoubleLinkedList> ophaalpatronen) //Iza
     {
         // de tijd:
         totale_kost = BerekenTotaleTijd(ophaalpatronen);
-        //Console.WriteLine($"Totale tijd: {totale_kost}");
-        // penalties:
-        foreach (Bedrijf bedrijf in NietBezochteBedrijven)
+        // het volume:
+        BerekenHuidigeVolume(ophaalpatronen);
+
+        foreach (Bedrijf bedrijf in NietBezochteBedrijven) // penalty niet bezochte bedrijven
         {
             totale_kost += bedrijf.LedigingsDuurMinuten * bedrijf.AantContainers * 3 * 60;
         }
-        //Console.WriteLine($"Niet bezochte bedrijven: {NietBezochteBedrijven.Count} ");
+
+        foreach (double Rijtijd in Rijtijden) // Penalty rijtijd overschreden
+        {
+            if(Rijtijd > 600*60)
+            {
+                totale_kost += (Rijtijd - 600*60) * 10;
+            }
+        }
+
+        foreach (double Volume in Volumes) // penalty volume overschreden
+        {
+            if(Volume > 20000)
+            {
+                totale_kost += (Volume - 20000) * 10;
+            }
+        }
         return totale_kost;
     }
 
@@ -352,12 +371,12 @@ class Program //functioneel
                 tijd += node.data.LedigingsDuurMinuten + TijdTussenBedrijven(stortPlaats, node.data);
             else
                 tijd += node.data.LedigingsDuurMinuten + TijdTussenBedrijven(node.previous.data, node.data);
-            if (volume > 20000)
+            if (volume > 20000) // Goof, hier kun je weer de schendingen toelaten
             {
                 Console.WriteLine("Fout: vrachtwagen te vol");
                 return false;
             }
-            if (tijd > 570*60)
+            if (tijd > 570*60) // Goof, en hier
             {
                 Console.WriteLine("Fout: tijdslimiet overschreden");
                 return false;
