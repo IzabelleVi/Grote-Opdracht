@@ -45,9 +45,18 @@ class Program //functioneel
     public static List<double> Rijtijden = new List<double>(); //Iza
     public static List<double> Volumes = new List<double>(); // Iza
     static double temperatuur;
+    public static double incrementeleTijd; 
+    public static double incrementeleVolume; 
     public static double huidigeKost; //Iza
     public static double totale_kost;
     public static List<Bedrijf> NietBezochteBedrijven = new List<Bedrijf>();
+    
+    public static Bedrijf stortPlaats = new Bedrijf {
+        Order = 0,
+        Plaats = "Stortplaats",
+        LedigingsDuurMinuten = 30 * 60, // 30 minutes to dispose of waste.
+        MatrixID = 287
+    };
 
     static void Main()
     {
@@ -200,31 +209,23 @@ class Program //functioneel
         // zijn zodra er een redelijke "begin oplossing is, en dat add & delete alleen in het begin nodig zijn.
         Random random = new Random();
 
-        int rand = random.Next(1, 5);
+        int rand = random.Next(1, 4);
         switch (rand)
         {
             case 1:
             //Console.WriteLine("ShiftAndereDag");
                 return BuurRuimtes.ShiftAndereDag(OphaalPatroon);
-                break;
             case 2:
-            //Console.WriteLine("Shift naar een Andere Truck");
-                return BuurRuimtes.ShiftAndereTruck(OphaalPatroon);
-                break;
-            case 3:
             //Console.WriteLine("Shift op de Zelfde Dag");
                 return BuurRuimtes.ShiftZelfdeDag(OphaalPatroon);
-                break;
-            case 4:
+            case 3:
             //Console.WriteLine("Add een bedrijd");
                 if(NietBezochteBedrijven.Count > 0)
                     return BuurRuimtes.Add(OphaalPatroon);
                 return OphaalPatroon;
-                break;
-            case 5:
+            case 4:
             //Console.WriteLine("Delete een bedrijf");
                 return BuurRuimtes.Delete(OphaalPatroon);
-                break;
         }
         return null;
     }
