@@ -15,17 +15,10 @@ namespace Grote_Opdracht
         private const int MAX_TRUCK_TIME_SECONDS = 720 * 60; // 720 minutes per day in seconds.
         private const int DISPOSAL_TIME_SECONDS = 30 * 60; // 30 minutes to dispose of waste.
 
-        public static Bedrijf stortPlaats = new Bedrijf {
-            Order = 0,
-            Plaats = "Stortplaats",
-            LedigingsDuurMinuten = DISPOSAL_TIME_SECONDS,
-            MatrixID = 287
-        };
-
         public static List<DoubleLinkedList> WillekeurigeBeginOplossing()
         {
             // Initialize 10 routes (2 trucks per day for 5 days).
-            List<DoubleLinkedList> routes = Enumerable.Range(0, 10).Select(_ => new DoubleLinkedList()).ToList(); // Ilan; dit moet aangepast worden voor trips
+            List<DoubleLinkedList> routes = Enumerable.Range(0, 15).Select(_ => new DoubleLinkedList()).ToList();
 
             Random random = new Random();
 
@@ -46,38 +39,28 @@ namespace Grote_Opdracht
                     // Assign days based on frequency.
                     List<int> days = GetValidDaysForFrequency(bedrijf.Frequentie, random);
 
-                    foreach (int day in days) { // Ilan; dit moet aangepast worden voor trips
-                        int truckIndex = day * 2 + random.Next(0, 2); // Choose one of two trucks for the day.
-                        TryAssign(truckIndex, bedrijf, false);
+                    foreach (int day in days) {
+                        int truckIndex = day * 3 + random.Next(0, 3); // Choose one of two trucks for the day.
+                        TryAssign(truckIndex, bedrijf, 0);
                     }
                 }
             }
 
-            // Ensure all routes start and end at the disposal site.
-            foreach (DoubleLinkedList route in routes) {
-                AddDisposalSiteToRoute(route); // Ilan; disposal maakt niet meer uit
-            }
-
             return routes;
 
-            void TryAssign(int truckIndex, Bedrijf bedrijf, bool retry) // could eventually return a bool to look if operation was succesful
+            void TryAssign(int truckIndex, Bedrijf bedrijf, int tries) // could eventually return a bool to look if operation was succesful
             {
                 if (AssignToRoute(routes[truckIndex], bedrijf, remainingVisits)) return;
 
-                if (AssignToRoute(routes[truckIndex], stortPlaats, null)) {
-                    AssignToRoute(routes[truckIndex], bedrijf, remainingVisits); }// Ilan: Disposal wordt niet meer gebruikt
-                else if (retry) return;
+                else if (tries == 2) return;
                 else {
-                    int differentDayTruck; // Get the difference in number of the other truck, 1 or -1
-                    if (truckIndex % 2 == 0) differentDayTruck = 1;
-                    else differentDayTruck = -1;
-                    TryAssign(truckIndex + differentDayTruck, bedrijf, true);
+                    int differentDayTruck = (truckIndex / 3) + ((truckIndex + 1) % 3);
+                    TryAssign(differentDayTruck, bedrijf, tries + 1);
                 }
-                // Iza, tijd en capaciteit berekenen
             }
         }
 
-        private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits) // Ilan, wederom de trips & disposal die niet meer hoeft
+        private static bool AssignToRoute(DoubleLinkedList route, Bedrijf bedrijf, Dictionary<Bedrijf, int>? remainingVisits) // Iza, nieuwe berekeningen
         {
             double currentVolume = 0;
             double currentTime = 0;
@@ -113,18 +96,7 @@ namespace Grote_Opdracht
             return false;
         }
 
-        private static void AddDisposalSiteToRoute(DoubleLinkedList route) // Ilan, mag weg
-        {
-            if (route.head == null) {
-                route.AddFirst(new Node(stortPlaats));
-                route.AddLast(new Node(stortPlaats));
-            } else {
-                route.AddFirst(new Node(stortPlaats));
-                route.AddLast(new Node(stortPlaats));
-            }
-        }
-
-        private static List<int> GetValidDaysForFrequency(int frequency, Random random) // Ilan, trips
+        private static List<int> GetValidDaysForFrequency(int frequency, Random random)
         {
             return frequency switch {
                 1 => new List<int> { random.Next(0, 5) }, // Any one day.
