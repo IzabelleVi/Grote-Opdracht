@@ -113,10 +113,10 @@ namespace Grote_Opdracht
                     int nieuweRit3 = sets[3][random.Next(0, sets[3].Length)]; // nieuwe rit op donderdag
                     int nieuweRit4 = sets[4][random.Next(0, sets[4].Length)]; // nieuwe rit op vrijdag
 
-                    int nieuwePlek1 = random.Next(1, huidigeOphaalpatronen[nieuweRit1].Count) - 1; // nieuwe plek op maandag
-                    int nieuwePlek2 = random.Next(1, huidigeOphaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op dinsdag
-                    int nieuwePlek3 = random.Next(1, huidigeOphaalpatronen[nieuweRit3].Count) - 1; // nieuwe plek op woensdag
-                    int nieuwePlek4 = random.Next(1, huidigeOphaalpatronen[nieuweRit4].Count) - 1; // nieuwe plek op donderdag
+                    int nieuwePlek1 = random.Next(0, huidigeOphaalpatronen[nieuweRit1].Count); // nieuwe plek op maandag
+                    int nieuwePlek2 = random.Next(0, huidigeOphaalpatronen[nieuweRit2].Count); // nieuwe plek op dinsdag
+                    int nieuwePlek3 = random.Next(0, huidigeOphaalpatronen[nieuweRit3].Count); // nieuwe plek op woensdag
+                    int nieuwePlek4 = random.Next(0, huidigeOphaalpatronen[nieuweRit4].Count); // nieuwe plek op donderdag
 
                     BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1);
                     BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2);
@@ -331,7 +331,6 @@ namespace Grote_Opdracht
 
                 int nieuwePlek1 = random.Next(1, ophaalpatronen[nieuweRit1].Count) - 1; // nieuwe plek op de eerste dag
                 int nieuwePlek2 = random.Next(1, ophaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op de tweede dag
-
                 BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], bedrijf, nieuwePlek1);
                 BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], bedrijf, nieuwePlek2);
 
@@ -339,7 +338,6 @@ namespace Grote_Opdracht
             }
             else if (frequentie == 3)
             {
-                Console.WriteLine("Frequentie 3");
                 int nieuweRit1 = sets[0][random.Next(0, sets[0].Length)]; // nieuwe rit op maandag
                 int nieuweRit2 = sets[1][random.Next(0, sets[1].Length)]; // nieuwe rit op woensdag
                 int nieuweRit3 = sets[2][random.Next(0, sets[2].Length)]; // nieuwe rit op vrijdag
@@ -356,7 +354,6 @@ namespace Grote_Opdracht
             }
             else if (frequentie == 4)
             {
-                Console.WriteLine("Frequentie 4");
                 bool chooseFirstSet = random.Next(0, 2) == 0;
                 int nieuweTrip1, nieuweTrip2, nieuweTrip3, nieuweTrip4;
                 if (chooseFirstSet)
@@ -394,8 +391,6 @@ namespace Grote_Opdracht
         private static int GetRandomIndex(DoubleLinkedList rit)
         {
             if (rit == null || rit.Count == 0) return -1;
-            //int ritIndex = random.Next(0, rit.Count) -1;
-            //Console.WriteLine("rit.Count: " + rit.Count);
             return random.Next(0, rit.Count);
         }
 
