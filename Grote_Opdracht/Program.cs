@@ -157,7 +157,7 @@ class Program //functioneel
             // Generate an initial solution
             List<DoubleLinkedList> huidigeOphaalpatronen = BeginOplossing.WillekeurigeBeginOplossing();
             double huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen); // berekent huidige tijd & volume en gebasseerd daarop de kost + penalty
-            Console.WriteLine($"Initiele kost: {huidigeKost}");
+            Console.WriteLine($"Initiele kost: {huidigeKost} Iteratie: {x}");
 
             int iteratie = 0;
             while (temperatuur > 1 && iteratie < maxIteraties) // Ilan, hier dus weer zorgen dat de temperatuur niet te snel 1 bereikt, en er voor zorgen dat bij elke nieuwe random start iteratie dit langer duurt.
