@@ -169,6 +169,8 @@ class Program //functioneel
             int iteratie = 0;
             while (temperatuur > 1 && iteratie < maxIteraties) // Ilan, hier dus weer zorgen dat de temperatuur niet te snel 1 bereikt, en er voor zorgen dat bij elke nieuwe random start iteratie dit langer duurt.
             {
+                buurRijtijden = Rijtijden;
+                buurVolumes = Volumes;
                 // Generate a neighbor solution
                 List<DoubleLinkedList> buurOphaalpatronen = BuurRuimteBepalen(huidigeOphaalpatronen);
                 double buurKost = BerekenBuurKost(buurOphaalpatronen, huidigeKost); 
@@ -178,6 +180,8 @@ class Program //functioneel
                 {
                     huidigeOphaalpatronen = buurOphaalpatronen;
                     huidigeKost = buurKost;
+                    Rijtijden = buurRijtijden;
+                    Volumes = buurVolumes;
                 }
 
                 // Update the best solution found
