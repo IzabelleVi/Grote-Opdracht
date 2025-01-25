@@ -44,11 +44,14 @@ class Program //functioneel
     static long maxIteraties = 100000; // Aantal iteraties voor Simulated Annealing
     public static List<double> Rijtijden = new List<double>(); //Iza
     public static List<double> Volumes = new List<double>(); // Iza
+    public static List<double> buurVolumes = new List<double>(); // Iza
+    public static List<double> buurRijtijden = new List<double>(); // Iza
     static double temperatuur;
     public static double incrementeleTijd; 
     public static double incrementeleVolume; 
     public static double huidigeKost; //Iza
     public static double totale_kost;
+    public static double buurKost;
     public static List<Bedrijf> NietBezochteBedrijven = new List<Bedrijf>();
     
     public static Bedrijf stortPlaats = new Bedrijf {
@@ -159,13 +162,16 @@ class Program //functioneel
             double huidigeKost = BerekenTotaleKost(huidigeOphaalpatronen); // berekent huidige tijd & volume en gebasseerd daarop de kost + penalty
             Console.WriteLine($"Initiele kost: {huidigeKost} Iteratie: {x}");
 
+            buurKost = huidigeKost;
+            buurRijtijden = Rijtijden;
+            buurVolumes = Volumes;
+
             int iteratie = 0;
             while (temperatuur > 1 && iteratie < maxIteraties) // Ilan, hier dus weer zorgen dat de temperatuur niet te snel 1 bereikt, en er voor zorgen dat bij elke nieuwe random start iteratie dit langer duurt.
             {
                 // Generate a neighbor solution
                 List<DoubleLinkedList> buurOphaalpatronen = BuurRuimteBepalen(huidigeOphaalpatronen);
-                double buurKost = BerekenTotaleKost(buurOphaalpatronen); // Iza, misschien nieuwe functie voor berekenen van buurkost incrementeel
-                //Console.WriteLine($"Buurkost: {buurKost}");
+                double buurKost = BerekenBuurKost(buurOphaalpatronen, huidigeKost); 
 
                 // Acceptance criteria
                 if (buurKost < huidigeKost || Math.Exp((huidigeKost - buurKost) / temperatuur) > r.NextDouble())
@@ -277,6 +283,37 @@ class Program //functioneel
         
     }
 
+    static double BerekenBuurKost(List<DoubleLinkedList> buurOphaalpatronen, double huidigeKost) 
+    {
+        double totalenBuurTijd = 0;
+        // Loop door elk patroon
+        for (int i = 0; i < buurRijtijden.Count; i++)
+        {
+            totalenBuurTijd += buurRijtijden[i];
+
+        }
+        foreach (Bedrijf bedrijf in NietBezochteBedrijven) // penalty niet bezochte bedrijven
+        {
+            totalenBuurTijd += bedrijf.LedigingsDuurMinuten * bedrijf.AantContainers * bedrijf.Frequentie * 3 * 60;
+        }
+
+        foreach (double Rijtijd in buurRijtijden) // Penalty rijtijd overschreden
+        {
+            if(Rijtijd > 600*60)
+            {
+                totalenBuurTijd += (Rijtijd - 600*60) * 10;
+            }
+        }
+
+        foreach (double Volume in buurVolumes) // penalty volume overschreden
+        {
+            if(Volume > 20000)
+            {
+                totalenBuurTijd += (Volume - 20000) * 10;
+            }
+        }
+        return totalenBuurTijd;
+    }
     static double BerekenTotaleTijd(List<DoubleLinkedList> ophaalpatronen) // Iza
     {
         double totalenTijd = 0;
@@ -337,7 +374,7 @@ class Program //functioneel
 
         foreach (Bedrijf bedrijf in NietBezochteBedrijven) // penalty niet bezochte bedrijven
         {
-            totale_kost += bedrijf.LedigingsDuurMinuten * bedrijf.AantContainers * 3 * 60;
+            totale_kost += bedrijf.LedigingsDuurMinuten * bedrijf.AantContainers * bedrijf.Frequentie* 3 * 60;
         }
 
         foreach (double Rijtijd in Rijtijden) // Penalty rijtijd overschreden
@@ -358,32 +395,4 @@ class Program //functioneel
         return totale_kost;
     }
 
-    public static bool Check_Legit(DoubleLinkedList OphaalPatroon) //functioneel
-    {
-        Bedrijf stortPlaats = new Bedrijf(); stortPlaats.Order = 0; stortPlaats.MatrixID = 287; // Ga ervan uit dat de stortplaats bekend is
-        double volume = 0;
-        double tijd = 0;
-
-        Node node = OphaalPatroon.head;
-        while(node != null)
-        {
-            volume += node.data.AantContainers * node.data.VolumePerContainer;
-            if (node == OphaalPatroon.head)
-                tijd += node.data.LedigingsDuurMinuten + TijdTussenBedrijven(stortPlaats, node.data);
-            else
-                tijd += node.data.LedigingsDuurMinuten + TijdTussenBedrijven(node.previous.data, node.data);
-            if (volume > 20000) // Goof, hier kun je weer de schendingen toelaten
-            {
-                Console.WriteLine("Fout: vrachtwagen te vol");
-                return false;
-            }
-            if (tijd > 570*60) // Goof, en hier
-            {
-                Console.WriteLine("Fout: tijdslimiet overschreden");
-                return false;
-            }
-            node = node.next;
-        }
-        return true;
-    }
 }
