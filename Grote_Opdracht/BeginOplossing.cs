@@ -15,6 +15,13 @@ namespace Grote_Opdracht
         private const int MAX_TRUCK_TIME_SECONDS = 720 * 60; // 720 minutes per day in seconds.
         private const int DISPOSAL_TIME_SECONDS = 30 * 60; // 30 minutes to dispose of waste.
 
+    public static Bedrijf stortPlaats = new Bedrijf {
+        Order = 0,
+        Plaats = "Stortplaats",
+        LedigingsDuurMinuten = 30 * 60, // 30 minutes to dispose of waste.
+        MatrixID = 287
+    };
+
         public static List<DoubleLinkedList> WillekeurigeBeginOplossing()
         {
             // Initialize 10 routes (2 trucks per day for 5 days).
