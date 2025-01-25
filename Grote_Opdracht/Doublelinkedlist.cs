@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Grote_Opdracht
 {
 
@@ -223,7 +225,13 @@ namespace Grote_Opdracht
 
         public void InsertAtIndex(Node node, int index) //Voegt bedrijf toe in gegeven index. Kost O(n/2)
         {
-            if (index < 0 || index > count) throw new ArgumentOutOfRangeException();
+            if (index < 0 || index > count)
+            {
+                tail.next = node;
+                node.previous = tail;
+                tail = node;
+                count++;
+            }
 
             if (index == 0) AddFirst(node);
             else if (index == count) AddLast(node);
@@ -238,7 +246,7 @@ namespace Grote_Opdracht
                 }
                 else
                 {
-                    current = tail;
+                    current = tail.previous;
                     for (int i = count - 1; i > index; i--)
                         current = current.previous;
                 }
