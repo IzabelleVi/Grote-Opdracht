@@ -14,7 +14,6 @@ namespace Grote_Opdracht
 {
     internal class BuurRuimtes
     {
-        static double incrementeel = 0;
         public static Random random = new Random();
         static List<DoubleLinkedList> GlobaleOphaalPatronen;
         
@@ -77,8 +76,8 @@ namespace Grote_Opdracht
                 DoubleLinkedList nieuweOphaalPatroon1 = huidigeOphaalpatronen[nieuweDag1]; // nieuw ophaalpatroon
                 int nieuwePlek1;
                 nieuwePlek1 = random.Next(1, nieuweOphaalPatroon1.Count) - 1;
-                BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
-                BaseToevoegen(nieuweOphaalPatroon1, verplaatsbaarBedrijf, nieuwePlek1);
+                BaseVerwijderen(ophaalPatroon, verplaatsbareNode, Dag1);
+                BaseToevoegen(nieuweOphaalPatroon1, verplaatsbaarBedrijf, nieuwePlek1, Dag1);
 
                 return huidigeOphaalpatronen;
             }
@@ -104,7 +103,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode, dag);
                         }
                         }
                     }
@@ -118,10 +117,10 @@ namespace Grote_Opdracht
                     int nieuwePlek3 = random.Next(0, huidigeOphaalpatronen[nieuweRit3].Count); // nieuwe plek op woensdag
                     int nieuwePlek4 = random.Next(0, huidigeOphaalpatronen[nieuweRit4].Count); // nieuwe plek op donderdag
 
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], verplaatsbaarBedrijf, nieuwePlek3);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit4], verplaatsbaarBedrijf, nieuwePlek4);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1, nieuweRit1);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2, nieuweRit2);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], verplaatsbaarBedrijf, nieuwePlek3, nieuweRit3);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit4], verplaatsbaarBedrijf, nieuwePlek4, nieuweRit4);
 
                     return GlobaleOphaalPatronen;
                 }
@@ -133,7 +132,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode, dag);
                         }
                         }
                     }
@@ -147,10 +146,10 @@ namespace Grote_Opdracht
                     int nieuwePlek3 = random.Next(1, huidigeOphaalpatronen[nieuweRit3].Count) - 1; // nieuwe plek op donderdag
                     int nieuwePlek4 = random.Next(1, huidigeOphaalpatronen[nieuweRit4].Count) - 1; // nieuwe plek op vrijdag
 
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], verplaatsbaarBedrijf, nieuwePlek3);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit4], verplaatsbaarBedrijf, nieuwePlek4);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1, nieuweRit1);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2, nieuweRit2);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], verplaatsbaarBedrijf, nieuwePlek3, nieuweRit3);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit4], verplaatsbaarBedrijf, nieuwePlek4, nieuweRit4);
                     
                     return GlobaleOphaalPatronen;
                 }
@@ -178,7 +177,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode, dag);
                         }
                         }
                     }
@@ -188,8 +187,8 @@ namespace Grote_Opdracht
                     int nieuwePlek1 = random.Next(1, huidigeOphaalpatronen[nieuweRit1].Count) - 1; // nieuwe plek op dinsdag
                     int nieuwePlek2 = random.Next(1, huidigeOphaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op vrijdag
 
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1, nieuweRit1);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2, nieuweRit2);
 
                     return GlobaleOphaalPatronen;
                 }
@@ -201,7 +200,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], verplaatsbareNode, dag);
                         }
                         }
                     }
@@ -211,8 +210,8 @@ namespace Grote_Opdracht
                     int nieuwePlek1 = random.Next(1, huidigeOphaalpatronen[nieuweRit1].Count) - 1; // nieuwe plek op maandag
                     int nieuwePlek2 = random.Next(1, huidigeOphaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op donderdag
 
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1);
-                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], verplaatsbaarBedrijf, nieuwePlek1, nieuweRit1);
+                    BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], verplaatsbaarBedrijf, nieuwePlek2, nieuweRit2);
                     
                     return GlobaleOphaalPatronen;
                 }
@@ -244,8 +243,8 @@ namespace Grote_Opdracht
 
                     DoubleLinkedList nieuweOphaalPatroon = GlobaleOphaalPatronen[nieuweDag];
                     int nieuwePlek = random.Next(1, nieuweOphaalPatroon.Count) - 1; // nieuwe plek op de zelfde dag, andere trip
-                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode);
-                    BaseToevoegen(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek);
+                    BaseVerwijderen(ophaalPatroon, verplaatsbareNode, Dag1);
+                    BaseToevoegen(nieuweOphaalPatroon, verplaatsbaarBedrijf, nieuwePlek, Dag1);
                     return huidigeOphaalpatronen;
                 }
             return GlobaleOphaalPatronen;
@@ -258,7 +257,6 @@ namespace Grote_Opdracht
         {
             if (Program.NietBezochteBedrijven == null || Program.NietBezochteBedrijven.Count == 0)
             {
-                Console.WriteLine("No bedrijven to add.");
                 return ophaalpatronen;
             }
 
@@ -266,19 +264,15 @@ namespace Grote_Opdracht
             switch (bedrijf.Frequentie)
             {
                 case 1:
-                    Console.WriteLine("Added bedrijf to random days freq 1");
                     GlobaleOphaalPatronen = AddToRandomDays(ophaalpatronen, bedrijf);
                     break;
                 case 2:
-                Console.WriteLine("Added bedrijf to specific days, frequentie 2");
                     GlobaleOphaalPatronen = AddToSpecificDays(ophaalpatronen, bedrijf);
                     break;
                 case 3:
-                    Console.WriteLine("Added bedrijf to specific days, frequentie 3");
                     GlobaleOphaalPatronen = AddToSpecificDays(ophaalpatronen, bedrijf);
                     break;
                 case 4:
-                    Console.WriteLine("Added bedrijf to specific days, frequentie 4");
                     GlobaleOphaalPatronen = AddToSpecificDays(ophaalpatronen, bedrijf);
                     break;
             }
@@ -288,9 +282,10 @@ namespace Grote_Opdracht
 
         public static List<DoubleLinkedList> AddToRandomDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf) 
         {
-            DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
+            int indexRit = random.Next(0, ophaalpatronen.Count);
+            DoubleLinkedList rit = ophaalpatronen[indexRit];
             int index = GetRandomIndex(rit);
-            BaseToevoegen(rit, bedrijf, index);
+            BaseToevoegen(rit, bedrijf, index, indexRit);
             return ophaalpatronen;
         }
 
@@ -300,13 +295,13 @@ namespace Grote_Opdracht
             List<int[]> sets = GetSetsForFrequentie(frequentie);
 
             if (frequentie == 1)
-            { Console.WriteLine("Frequentie 1"); // Randomly choose between the two sets of arrays
+            { 
                 int[] set = sets[random.Next(0, sets.Count)]; // set van dagen
 
                 int nieuweDag1 = set[random.Next(0, set.Length)]; // index nieuw ophaalpatroon
                 DoubleLinkedList nieuweOphaalPatroon1 = ophaalpatronen[nieuweDag1]; // nieuw ophaalpatroon
                 int nieuwePlek1 = random.Next(1, nieuweOphaalPatroon1.Count) - 1;
-                BaseToevoegen(nieuweOphaalPatroon1, bedrijf, nieuwePlek1);
+                BaseToevoegen(nieuweOphaalPatroon1, bedrijf, nieuwePlek1, nieuweDag1);
 
                 return ophaalpatronen;
             }
@@ -331,8 +326,8 @@ namespace Grote_Opdracht
 
                 int nieuwePlek1 = random.Next(1, ophaalpatronen[nieuweRit1].Count) - 1; // nieuwe plek op de eerste dag
                 int nieuwePlek2 = random.Next(1, ophaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op de tweede dag
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], bedrijf, nieuwePlek1);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], bedrijf, nieuwePlek2);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], bedrijf, nieuwePlek1, nieuweRit1);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], bedrijf, nieuwePlek2, nieuweRit2);
 
                 return ophaalpatronen;
             }
@@ -346,9 +341,9 @@ namespace Grote_Opdracht
                 int nieuwePlek2 = random.Next(1, ophaalpatronen[nieuweRit2].Count) - 1; // nieuwe plek op woensdag
                 int nieuwePlek3 = random.Next(1, ophaalpatronen[nieuweRit3].Count) - 1; // nieuwe plek op vrijdag
 
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], bedrijf, nieuwePlek1);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], bedrijf, nieuwePlek2);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], bedrijf, nieuwePlek3);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit1], bedrijf, nieuwePlek1, nieuweRit1);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit2], bedrijf, nieuwePlek2, nieuweRit2);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweRit3], bedrijf, nieuwePlek3, nieuweRit3);
 
                 return ophaalpatronen;
             }
@@ -378,10 +373,10 @@ namespace Grote_Opdracht
                 int nieuwePlek3 = random.Next(1, ophaalpatronen[nieuweTrip3].Count) - 1; // nieuwe plek op woensdag/donderdag
                 int nieuwePlek4 = random.Next(1, ophaalpatronen[nieuweTrip4].Count) - 1; // nieuwe plek op donderdag/vrijdag
 
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip1], bedrijf, nieuwePlek1);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip2], bedrijf, nieuwePlek2);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip3], bedrijf, nieuwePlek3);
-                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip4], bedrijf, nieuwePlek4);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip1], bedrijf, nieuwePlek1, nieuweTrip1);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip2], bedrijf, nieuwePlek2, nieuweTrip2);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip3], bedrijf, nieuwePlek3, nieuweTrip3);
+                BaseToevoegen(GlobaleOphaalPatronen[nieuweTrip4], bedrijf, nieuwePlek4, nieuweTrip4);
 
                 return ophaalpatronen;
             }
@@ -396,7 +391,8 @@ namespace Grote_Opdracht
 
         public static List<DoubleLinkedList> Delete(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
-            DoubleLinkedList rit = huidigeOphaalpatronen[random.Next(0, huidigeOphaalpatronen.Count)]; // Random rit
+            int indexRit = random.Next(0, huidigeOphaalpatronen.Count); // Random rit
+            DoubleLinkedList rit = huidigeOphaalpatronen[indexRit]; // Random rit
             int index = GetRandomIndex(rit);
             Node node = rit.Index(index);
             if (node == null) return huidigeOphaalpatronen;
@@ -407,7 +403,7 @@ namespace Grote_Opdracht
 
             if (frequentie == 1)
             {
-                BaseVerwijderen(rit, node);
+                BaseVerwijderen(rit, node, indexRit);
                 return huidigeOphaalpatronen;
             }
             else if (frequentie == 2)
@@ -432,7 +428,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node, dag);
                         }
                         }
                     }
@@ -446,7 +442,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node, dag);
                         }
                         }
                     }
@@ -473,7 +469,7 @@ namespace Grote_Opdracht
                     {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node, dag);
                         }
                     }
                 }
@@ -502,7 +498,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node, dag);
                         }
                         }
                     }
@@ -516,7 +512,7 @@ namespace Grote_Opdracht
                         {
                         if (aanwezigheid[dag]) 
                         {
-                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node);
+                            BaseVerwijderen(GlobaleOphaalPatronen[dag], node, dag);
                         }
                         }
                     }
@@ -527,7 +523,7 @@ namespace Grote_Opdracht
            return GlobaleOphaalPatronen;
         }
 
-        static void BaseVerwijderen(DoubleLinkedList ophaalpatroon, Node nodeBedrijf)
+        static void BaseVerwijderen(DoubleLinkedList ophaalpatroon, Node nodeBedrijf, int ophaalpatroonIndex)
         {
             Program.NietBezochteBedrijven.Add(nodeBedrijf.data);
             double incrementeel = 0;
@@ -558,11 +554,14 @@ namespace Grote_Opdracht
             }   
             Program.incrementeleVolume = incrementeelVolume;
             Program.incrementeleTijd = incrementeel;
+            Program.buurVolumes[ophaalpatroonIndex] = Program.buurVolumes[ophaalpatroonIndex] - incrementeelVolume;
+            Program.buurRijtijden[ophaalpatroonIndex] = Program.buurRijtijden[ophaalpatroonIndex] - incrementeel;
+
 
             ophaalpatroon.Remove(nodeBedrijf);
         }
 
-        static void BaseToevoegen(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index) //Iza
+        static void BaseToevoegen(DoubleLinkedList ophaalpatroon, Bedrijf bedrijf, int index, int ophaalpatroonIndex) //Iza
         {
             Program.NietBezochteBedrijven.Remove(bedrijf);
             Node nodeBedrijf = new Node(bedrijf);
@@ -597,6 +596,8 @@ namespace Grote_Opdracht
             }   
             Program.incrementeleVolume = incrementeelVolume;
             Program.incrementeleTijd = incrementeel;
+            Program.buurVolumes[ophaalpatroonIndex] = Program.buurVolumes[ophaalpatroonIndex] + incrementeelVolume;
+            Program.buurRijtijden[ophaalpatroonIndex] = Program.buurRijtijden[ophaalpatroonIndex] + incrementeel;
         }
     }
 }
