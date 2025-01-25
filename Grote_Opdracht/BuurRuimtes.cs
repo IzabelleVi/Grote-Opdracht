@@ -197,7 +197,7 @@ namespace Grote_Opdracht
             return sets;
         }
 
-        public static List<DoubleLinkedList> ShiftAndereTruck(List<DoubleLinkedList> huidigeOphaalpatronen) // Ilan, aanpassen voor wat de nieuwe trucks zijn?
+        public static List<DoubleLinkedList> ShiftAndereTruck(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
             incrementeel = 0;
@@ -252,7 +252,7 @@ namespace Grote_Opdracht
 
 
         // Verschuift een bedrijf naar een andere plek binnen hetzelfde ophaalpatroon.
-        public static List<DoubleLinkedList> ShiftZelfdeDag(List<DoubleLinkedList> huidigeOphaalpatronen) // Ilan, zorgen dat dit overeenkomt met de trips.
+        public static List<DoubleLinkedList> ShiftZelfdeDag(List<DoubleLinkedList> huidigeOphaalpatronen)
         {
             incrementeel = 0;
             GlobaleOphaalPatronen = huidigeOphaalpatronen;
@@ -293,7 +293,7 @@ namespace Grote_Opdracht
             return huidigeOphaalpatronen;
         }
 
-        public static List<DoubleLinkedList> Add(List<DoubleLinkedList> ophaalpatronen) // Ilan, Aanpassen voor de trips
+        public static List<DoubleLinkedList> Add(List<DoubleLinkedList> ophaalpatronen)
         {
             if (ophaalpatronen == null || ophaalpatronen.Count == 0)
             {
@@ -318,13 +318,13 @@ namespace Grote_Opdracht
                     added = AddToRandomDays(ophaalpatronen, bedrijf);
                     break;
                 case 2:
-                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } });
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 9, 10, 11}, new int[] { 3, 4, 5, 12, 13, 14 } });
                     break;
                 case 3:
-                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } });
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 6, 7, 8, 12, 13, 14 } });
                     break;
                 case 4:
-                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } });
+                    added = AddToSpecificDays(ophaalpatronen, bedrijf, new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, new int[] { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 } });
                     break;
             }
 
@@ -335,7 +335,7 @@ namespace Grote_Opdracht
 
             return ophaalpatronen;
             }
-// Maandag: 01, Dinsdag 23, Woensdag 45, Donderdag 67, Vrijdag 89
+// Maandag: 012, Dinsdag 345, Woensdag 678, Donderdag 91011, Vrijdag 121314
             private static bool AddToRandomDays(List<DoubleLinkedList> ophaalpatronen, Bedrijf bedrijf) 
             {
                 DoubleLinkedList rit = ophaalpatronen[random.Next(0, ophaalpatronen.Count)];
@@ -410,16 +410,16 @@ namespace Grote_Opdracht
             switch (verwijderBedrijf.Frequentie)
             {
                 case 1:
-                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } };
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 } };
                     break;
                 case 2:
-                    dayGroups = new int[][] { new int[] { 0, 1, 6, 7 }, new int[] { 2, 3, 8, 9 } };
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 9, 10, 11}, new int[] { 3, 4, 5, 12, 13, 14 } };
                     break;
                 case 3:
-                    dayGroups = new int[][] { new int[] { 0, 1, 4, 5, 8, 9 } };
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 6, 7, 8, 12, 13, 14 } };
                     break;
                 case 4:
-                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7 }, new int[] { 2, 3, 4, 5, 6, 7, 8, 9 } };
+                    dayGroups = new int[][] { new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }, new int[] { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 } };
                     break;
             }
 
